@@ -4,11 +4,16 @@
   "private": true,
   "dependencies": {
     "@mocktailgpt/ts": "file:../../packages/@mocktailgpt/ts",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "vite": "^5.0.0"
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "vite": "^6.3.5",
+    "typescript": "~5.8.3"
   },
   "scripts": {
     "dev": "vite",
