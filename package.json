@@ -2,16 +2,20 @@
   "name": "mocktailgpt",
   "private": true,
   "workspaces": [
-    "packages/@mocktailgpt/ts"
+    "packages/@mocktailgpt/ts",
+    "examples/vanScrapper"
   ],
   "scripts": {
-    "build": "tsc -b packages/@mocktailgpt/ts",
-    "lint": "eslint . --ext .ts",
+    "build": "bash scripts/build.sh",
+    "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write ."
   },
   "devDependencies": {
     "eslint": "^8.0.0",
     "prettier": "^2.0.0",
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "pnpm": "^10.12.1"
   }
 }

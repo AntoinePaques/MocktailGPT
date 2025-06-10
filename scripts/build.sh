@@ -8,6 +8,7 @@ find packages/@mocktailgpt/ts/dist -type f -delete
 
 # Build principal du SDK
 echo "🔨 Build de @mocktailgpt/ts..."
-pnpm exec tsc -b packages/@mocktailgpt/ts
+npm run --workspace=@mocktailgpt/ts build
 
 echo "✅ Build finalisé proprement !"
+exit 0
