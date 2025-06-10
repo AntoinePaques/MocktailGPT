@@ -1,0 +1,11 @@
+# Exclude tout sauf /dist (et package.json, README.md si tu veux)
+src
+tests
+examples
+*.ts
+*.md~
+*.bak
+
+# Node
+node_modules
+tsconfig.json

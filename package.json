@@ -1,0 +1,17 @@
+{
+  "name": "mocktailgpt",
+  "private": true,
+  "workspaces": [
+    "packages/@mocktailgpt/ts"
+  ],
+  "scripts": {
+    "build": "tsc -b packages/@mocktailgpt/ts",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^2.0.0",
+    "typescript": "^5.0.0"
+  }
+}
