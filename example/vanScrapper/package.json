@@ -7,7 +7,7 @@
   },
   "scripts": {
     "clean": "rimraf generated",
-    "gen": "SWAGGER_PATH=./swagger.yaml orval --config ../../packages/@mocktailgpt/ts/orval.config.ts",
+    "gen": "mocktail",
     "lint": "eslint src --ext .ts",
     "build": "tsc",
     "format": "prettier -w \"**/*.ts\""

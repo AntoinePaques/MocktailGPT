@@ -6,7 +6,7 @@ This example consumes the `@mocktailgpt/ts` package.
 
 ```bash
 npm install
-npm run gen
+npx mocktail
 ```
 
 The provided `swagger.yaml` is used to generate types, API client and mocks.
@@ -17,3 +17,5 @@ Vendor extensions (`x-*`) can be used inside the spec to control the OpenAI requ
 - `x-temperature`
 - `x-operation-type`
 - `x-prompt`
+
+Edit these keys in `swagger.yaml` to change how the OpenAI requests behave before running `npx mocktail`.

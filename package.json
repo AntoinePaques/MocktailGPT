@@ -11,7 +11,8 @@
     "build": "npm -ws run build",
     "lint": "npm -ws run lint",
     "format": "npm -ws run format",
-    "gen": "npm -ws --if-present run gen"
+    "gen": "npm -ws --if-present run gen",
+    "test": "npm -ws run test"
   },
   "devDependencies": {
     "eslint": "^8.56.0",

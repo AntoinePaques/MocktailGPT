@@ -2,7 +2,7 @@
 
 Built with ChatGPT for CHATGPT but reviewed by human.
 
-This repository contains a TypeScript SDK generator and an example project.
+This monorepo provides a generic OpenAPI SDK generator and an example project.
 
 ## Packages
 
@@ -11,11 +11,14 @@ This repository contains a TypeScript SDK generator and an example project.
 
 ## Workflow
 
-Use `npm run gen` to generate API clients and mocks from OpenAPI specs.
-Lint, format and build are available through workspace scripts.
+Run `./scripts/init.sh` once to install dependencies.
+`./scripts/generate.sh` calls the `mocktail` CLI to create clients and mocks.
+`./scripts/lint.sh` and `./scripts/test.sh` run quality checks.
+
+Vendor extension defaults are defined in `packages/@mocktailgpt/ts/src/vendorExtensions.ts`.
 
 ```bash
-npm run gen
-npm run lint
-npm run build
+./scripts/generate.sh
+./scripts/lint.sh
+./scripts/test.sh
 ```

@@ -4,12 +4,16 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist"],
+  "bin": {
+    "mocktail": "dist/cli.js"
+  },
   "scripts": {
     "clean": "rimraf dist generated",
     "gen": "orval --config orval.config.ts",
     "build": "tsc -p tsconfig.json",
-    "lint": "eslint src --ext .ts",
-    "format": "prettier -w \"**/*.ts\""
+    "lint": "eslint src test --ext .ts",
+    "format": "prettier -w \"**/*.ts\"",
+    "test": "node dist/test/vendor.test.js"
   },
   "devDependencies": {
     "orval": "^7.1.0",
