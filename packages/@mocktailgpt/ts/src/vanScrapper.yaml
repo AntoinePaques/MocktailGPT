@@ -1,0 +1,241 @@
+openapi: 3.0.3
+info:
+  title: van-scrapper API
+  version: '2.0'
+  description: >
+    API for retrieving, analyzing and structuring van info for van conversion business, resale, and homologation in Belgium.
+    All endpoints POST, OpenAI completions format only. All properties in English, string values in source language (fr/en). Enums factorized.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.vanscrapper.com
+    description: Production
+  - url: https://dev.vanscrapper.com
+    description: Dev
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /search:
+    post:
+      summary: Get technical specs, compatibility, dimensions, and mechanical data.
+      operationId: search
+      x-model: gpt-4
+      x-operation-type: chat
+      x-temperature: 0.3
+      parameters:
+        - $ref: '#/components/parameters/xVendorExtensionKey'
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VanSearchRequest'
+      responses:
+        '200':
+          description: Van technical specs response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletion'
+        '400':
+          description: Bad Request - invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletion'
+      tags:
+        - Search
+
+  /specs:
+    post:
+      summary: Get technical specs, compatibility, dimensions, and mechanical data.
+      operationId: getSpecs
+      x-model: gpt-4
+      x-operation-type: chat
+      x-temperature: 0.3
+      parameters:
+        - $ref: '#/components/parameters/xVendorExtensionKey'
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VanRequest'
+      responses:
+        '200':
+          description: Van technical specs response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletion'
+        '400':
+          description: Bad Request - invalid input parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletion'
+      tags:
+        - Specs
+
+components:
+  parameters:
+    xVendorExtensionKey:
+      name: X-Vendor-Extension-Key
+      in: header
+      required: false
+      schema:
+        $ref: '#/components/schemas/VendorExtensionKey'
+      description: Supported vendor extension key (x-*) for debug or advanced usage.
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    VendorExtensionKey:
+      type: string
+      enum:
+        - x-model
+        - x-temperature
+        - x-operation-type
+        - x-prompt
+
+    VanRequest:
+      allOf:
+        - $ref: '#/components/schemas/Van'
+        - type: object
+          properties:
+            slug:
+              type: string
+          additionalProperties: false
+
+    VanSearchRequest:
+      type: object
+      properties:
+        brand: { type: string }
+        model: { type: string }
+        year: { type: integer }
+        size: { type: string }
+        engine: { type: string }
+        limit: { type: integer }
+        offset: { type: integer }
+      required: [brand, model]
+      additionalProperties: false
+
+    ChatCompletion:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+          enum: [chat.completion]
+        created:
+          type: integer
+        model:
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatCompletionChoice'
+      required: [id, object, created, model, choices]
+      additionalProperties: false
+
+    ChatCompletionChoice:
+      type: object
+      properties:
+        index:
+          type: integer
+        finishReason:
+          type: string
+        message:
+          $ref: '#/components/schemas/ChatCompletionMessage'
+      required: [index, finishReason, message]
+      additionalProperties: false
+
+    ChatCompletionMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [assistant]
+        content:
+          items:
+            type: string
+            oneOf:
+              - $ref: '#/components/schemas/SpecsData'
+              - $ref: '#/components/schemas/ErrorData'
+      required: [role, content]
+      additionalProperties: false
+
+    ErrorData:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [error, warning]
+        message:
+          type: string
+        requestId:
+          type: string
+      required: [status, message, requestId]
+      additionalProperties: false
+
+    Van:
+      type: object
+      properties:
+        brand:
+          type: string
+        model:
+          type: string
+        size:
+          type: string
+        year:
+          type: integer
+        engine:
+          type: string
+      required: [brand, model, year, engine]
+      additionalProperties: false
+
+    SpecsData:
+      allOf:
+        - $ref: '#/components/schemas/Van'
+        - type: object
+          properties:
+            dimensions:
+              type: object
+              properties:
+                lengthMm: { type: integer }
+                widthMm: { type: integer }
+                heightMm: { type: integer }
+                wheelbaseMm: { type: integer }
+              additionalProperties: false
+            mechanics:
+              type: object
+              properties:
+                engine: { type: string }
+                fuelType: { type: string }
+                transmission: { type: string }
+                powerHp: { type: integer }
+              additionalProperties: false
+            features:
+              type: array
+              items:
+                type: string
+            compatibility:
+              type: array
+              items:
+                type: string
+            notes:
+              type: string
+          additionalProperties: false
