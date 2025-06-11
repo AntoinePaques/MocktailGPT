@@ -1,6 +1,6 @@
-import { defineConfig } from "orval";
+const { defineConfig } = require("orval");
 
-export default defineConfig({
+module.exports = defineConfig({
   default: {
     input: { target: process.env.SWAGGER_PATH || "./swagger.yaml" },
     output: {

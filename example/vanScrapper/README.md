@@ -1,5 +1,7 @@
 # vanScrapper example
 
+Built with ChatGPT for CHATGPT but reviewed by human.
+
 This example consumes the `@mocktailgpt/ts` package.
 
 ## Quick start

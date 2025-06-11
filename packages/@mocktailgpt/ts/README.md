@@ -1,10 +1,12 @@
 # @mocktailgpt/ts
 
+Built with ChatGPT for CHATGPT but reviewed by human.
+
 Generic OpenAPI based SDK generator.
 
 ## Usage
 
-Place a `swagger.yaml` next to `orval.config.ts` then run:
+Place a `swagger.yaml` next to `orval.config.js` then run:
 
 ```bash
 mocktail
@@ -19,4 +21,4 @@ Vendor extension keys supported:
 - `x-operation-type`
 - `x-prompt`
 
-See `orval.config.ts` to override mutators or mocks. You can pass a custom config path to `mocktail` as well.
+See `orval.config.js` to override mutators or mocks. You can pass a custom config path to `mocktail` as well.
