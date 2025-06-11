@@ -1,0 +1,15 @@
+{
+  "name": "van-scrapper-example",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@mocktailgpt/ts": "workspace:*"
+  },
+  "scripts": {
+    "clean": "rimraf generated",
+    "gen": "mocktail",
+    "lint": "eslint src --ext .ts",
+    "build": "tsc",
+    "format": "prettier -w \"**/*.ts\""
+  }
+}
