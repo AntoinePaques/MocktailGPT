@@ -1,0 +1,24 @@
+{
+  "name": "@mocktailgpt/ts",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "clean": "rimraf dist generated",
+    "gen": "orval --config orval.config.ts",
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier -w \"**/*.ts\""
+  },
+  "devDependencies": {
+    "orval": "^7.1.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.2.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0"
+  },
+  "dependencies": {
+    "openai": "^4.0.0"
+  }
+}

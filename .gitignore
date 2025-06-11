@@ -1,16 +1,5 @@
-# Node
 node_modules
-/dist
-
-# Build output
-*.tsbuildinfo
-
-# Env
-.env
-.env.local
-.env.*.local
-
-# IDE / Editor
-.vscode
-.idea
+*.log
 .DS_Store
+dist
+generated
