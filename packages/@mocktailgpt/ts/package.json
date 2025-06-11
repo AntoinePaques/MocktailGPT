@@ -1,6 +1,6 @@
 {
   "name": "@mocktailgpt/ts",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -10,9 +10,17 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc -p ."
+    "build": "tsc",
+    "generate": "orval --config orval.config.js",
+    "wrap": "node scripts/wrap.js"
+  },
+  "bin": {
+    "mocktail": "./bin/mocktail.js"
+  },
+  "dependencies": {
+    "orval": "^7.9.0"
   },
   "devDependencies": {
-    "typescript": "~5.8.3"
+    "typescript": "^5.4.0"
   }
 }
