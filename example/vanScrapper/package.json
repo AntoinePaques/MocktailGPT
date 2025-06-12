@@ -10,6 +10,7 @@
     "gen": "mocktail",
     "lint": "eslint src --ext .ts",
     "build": "tsc",
-    "format": "prettier -w \"**/*.ts\""
+    "format": "prettier -w \"**/*.ts\"",
+    "generate": "node ../../packages/@mocktailgpt/ts/dist/cli.js --config ../../packages/@mocktailgpt/ts/orval.config.js"
   }
 }
