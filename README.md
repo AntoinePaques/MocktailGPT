@@ -11,14 +11,12 @@ This monorepo provides a generic OpenAPI SDK generator and an example project.
 
 ## Workflow
 
-Run `./scripts/init.sh` once to install dependencies.
-`./scripts/generate.sh` calls the `mocktail` CLI to create clients and mocks.
-`./scripts/lint.sh` and `./scripts/test.sh` run quality checks.
+Run `pnpm install` to set up the workspace. Build the generator with `pnpm --filter @mocktailgpt/ts build` and generate the example client with `cd example/vanScrapper && pnpm generate`. Use `pnpm lint` and `pnpm test` for quality checks.
 
 Vendor extension defaults are defined in `packages/@mocktailgpt/ts/src/vendorExtensions.ts`.
 
 ```bash
-./scripts/generate.sh
-./scripts/lint.sh
-./scripts/test.sh
+pnpm install
+pnpm --filter @mocktailgpt/ts build
+cd example/vanScrapper && pnpm generate
 ```

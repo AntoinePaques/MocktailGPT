@@ -22,3 +22,5 @@ Vendor extension keys supported:
 - `x-prompt`
 
 See `orval.config.js` to override mutators or mocks. You can pass a custom config path to `mocktail` as well.
+
+Run `pnpm --filter @mocktailgpt/ts test` after building to verify the exported vendor keys.

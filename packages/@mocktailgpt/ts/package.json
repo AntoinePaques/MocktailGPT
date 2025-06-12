@@ -13,7 +13,7 @@
     "clean": "rimraf dist generated",
     "gen": "orval --config orval.config.js",
     "build": "tsc -p tsconfig.json",
-    "lint": "eslint src test --ext .ts",
+    "lint": "eslint src",
     "format": "prettier -w \"**/*.ts\"",
     "test": "node dist/test/vendor.test.js"
   },
