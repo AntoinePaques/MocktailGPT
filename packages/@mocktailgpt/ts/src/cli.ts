@@ -34,6 +34,24 @@ export const run = (configPath?: string) => {
       userCfg?.default?.output?.override?.mutator?.path ||
       userCfg?.output?.override?.mutator?.path;
   }
+  if (cfg?.default?.input?.target) {
+    cfg.default.input.target = path.resolve(
+      process.cwd(),
+      cfg.default.input.target,
+    );
+  }
+  if (cfg?.default?.output?.target) {
+    cfg.default.output.target = path.resolve(
+      process.cwd(),
+      cfg.default.output.target,
+    );
+  }
+  if (cfg?.default?.output?.schemas) {
+    cfg.default.output.schemas = path.resolve(
+      process.cwd(),
+      cfg.default.output.schemas,
+    );
+  }
   if (userMutator) {
     const wrapper = path.join(os.tmpdir(), "mocktail-user-mutator.js");
     fs.writeFileSync(
@@ -52,7 +70,8 @@ export const run = (configPath?: string) => {
   }
   const tempCfg = path.join(os.tmpdir(), "mocktail-orval.json");
   fs.writeFileSync(tempCfg, JSON.stringify(cfg, null, 2));
-  spawnSync("orval", ["--config", tempCfg], { stdio: "inherit" });
+  const orvalBin = path.join(__dirname, "../node_modules/.bin/orval");
+  spawnSync(orvalBin, ["--config", tempCfg], { stdio: "inherit" });
 };
 
 if (require.main === module) {
