@@ -11,6 +11,10 @@
     "lint": "eslint src",
     "build": "tsc",
     "format": "prettier -w \"**/*.ts\"",
-    "generate": "node ../../packages/@mocktailgpt/ts/dist/cli.js ../../packages/@mocktailgpt/ts/orval.config.js"
+    "generate": "node ../../packages/@mocktailgpt/ts/dist/cli.js ../../packages/@mocktailgpt/ts/orval.config.js",
+    "test": "echo no tests"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.0"
   }
 }
