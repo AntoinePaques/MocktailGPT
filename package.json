@@ -12,7 +12,8 @@
     "lint": "npm -ws run lint",
     "format": "npm -ws run format",
     "gen": "npm -ws --if-present run gen",
-    "test": "npm -ws run test"
+    "test": "npm -ws run test",
+    "postinstall": "pnpm --filter @mocktailgpt/ts run build && pnpm rebuild @mocktailgpt/ts"
   },
   "devDependencies": {
     "eslint": "^8.56.0",
