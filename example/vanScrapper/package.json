@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@mocktailgpt/ts": "workspace:*"
+    "@mocktailgpt/ts": "workspace:*",
+    "@faker-js/faker": "^8.4.0",
+    "msw": "^2.10.2"
   },
   "scripts": {
     "clean": "rimraf generated",

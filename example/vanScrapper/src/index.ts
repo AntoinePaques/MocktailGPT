@@ -1,7 +1,7 @@
-import { getSpecs } from "./generated/vanScrapperAPI";
+import { getSpecs } from "./generated/client";
 
 (async () => {
-  if ((import.meta as any).env?.MODE === "development") {
+  if (process.env.NODE_ENV === "development") {
     const { worker } = await import("./generated/msw");
     await worker.start();
   }

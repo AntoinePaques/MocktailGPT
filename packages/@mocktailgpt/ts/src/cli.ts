@@ -156,7 +156,7 @@ export const generate = (argv: string[]) => {
       `import { openaiMutator } from "@mocktailgpt/ts";\n` +
         `import { globalMockMutator } from './globalMockMutator';\n` +
         `import userMutator from "${resolved}";\n` +
-        `export const globalMutator = async (opts: any) => {\n` +
+        `const globalMutator = async (opts: any) => {\n` +
         `  if (!process.env.OPENAI_API_KEY) {\n` +
         `    console.log('Mock mode (no OPENAI_API_KEY)');\n` +
         `    return globalMockMutator(opts);\n` +
@@ -165,20 +165,22 @@ export const generate = (argv: string[]) => {
         `  if (typeof userMutator === 'function') return userMutator(opts);\n` +
         `  if (userMutator && typeof userMutator.default === 'function') return userMutator.default(opts);\n` +
         `  if (userMutator && typeof userMutator.mutator === 'function') return userMutator.mutator(opts);\n` +
-        `};\n`,
+        `};\n` +
+        `export default globalMutator;\n`,
     );
   } else {
     fs.writeFileSync(
       gmPath,
       `import { openaiMutator } from "@mocktailgpt/ts";\n` +
         `import { globalMockMutator } from './globalMockMutator';\n` +
-        `export const globalMutator = async (opts: any) => {\n` +
+        `const globalMutator = async (opts: any) => {\n` +
         `  if (!process.env.OPENAI_API_KEY) {\n` +
         `    console.log('Mock mode (no OPENAI_API_KEY)');\n` +
         `    return globalMockMutator(opts);\n` +
         `  }\n` +
         `  return openaiMutator(opts);\n` +
-        `};\n`,
+        `};\n` +
+        `export default globalMutator;\n`,
     );
   }
 
@@ -244,16 +246,18 @@ export const generate = (argv: string[]) => {
     for (const [method, op] of Object.entries(ops as Record<string, any>)) {
       const opId = op.operationId || "";
       handlers.push(
-        `  rest.${method}('${p}', async (_req, res, ctx) => {\n` +
+        `  http.${method}('${p}', async () => {\n` +
           `    const json = await globalMockMutator({ operation: { operationId: '${opId}' } });\n` +
-          `    return res(ctx.json(json as any));\n` +
+          `    return HttpResponse.json(json as any);\n` +
           `  }),`,
       );
     }
   }
   fs.writeFileSync(
     mswPath,
-    `import { rest, setupWorker, setupServer } from 'msw';\n` +
+    `import { http, HttpResponse } from 'msw';\n` +
+      `import { setupWorker } from 'msw/browser';\n` +
+      `import { setupServer } from 'msw/node';\n` +
       `import { globalMockMutator } from './globalMockMutator';\n\n` +
       `export const handlers = [\n${handlers.join("\n")}\n];\n\n` +
       `export const worker = setupWorker(...handlers);\n` +

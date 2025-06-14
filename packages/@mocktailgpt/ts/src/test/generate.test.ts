@@ -28,7 +28,7 @@ assert.ok(/chat\.completion/.test(gm));
 assert.ok(/choices/.test(gm));
 
 const msw = fs.readFileSync(path.join(outDir, "msw.ts"), "utf8");
-assert.ok(/rest\.post/.test(msw));
+assert.ok(/http\.post/.test(msw));
 assert.ok(/\/specs/.test(msw));
 
 assert.ok(fs.existsSync(path.join(outDir, "mockServiceWorker.js")));

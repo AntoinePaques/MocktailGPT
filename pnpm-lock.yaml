@@ -26,9 +26,15 @@ importers:
 
   example/vanScrapper:
     dependencies:
+      '@faker-js/faker':
+        specifier: ^8.4.0
+        version: 8.4.1
       '@mocktailgpt/ts':
         specifier: workspace:*
         version: link:../../packages/@mocktailgpt/ts
+      msw:
+        specifier: ^2.10.2
+        version: 2.10.2(@types/node@24.0.1)(typescript@5.8.3)
     devDependencies:
       '@types/node':
         specifier: ^24.0.1
@@ -321,6 +327,10 @@ packages:
 
   '@exodus/schemasafe@1.3.0':
     resolution: {integrity: sha512-5Aap/GaRupgNx/feGBwLLTVv8OQFfv3pq2lPRzPg9R+IOBnDgghTGW7l7EuVXOvg5cc/xSAlRW8rBrjIC3Nvqw==}
+
+  '@faker-js/faker@8.4.1':
+    resolution: {integrity: sha512-XQ3cU+Q8Uqmrbf2e0cIC/QN43sTBSC8KF12u29Mb47tWrt2hAgBXSgpZMj4Ao8Uk0iJcU99QsOCaIL8934obCg==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
 
   '@gerrit0/mini-shiki@3.6.0':
     resolution: {integrity: sha512-KaeJvPNofTEZR9EzVNp/GQzbQqkGfjiu6k3CXKvhVTX+8OoAKSX/k7qxLKOX3B0yh2XqVAc93rsOu48CGt2Qug==}
@@ -2361,6 +2371,8 @@ snapshots:
       levn: 0.4.1
 
   '@exodus/schemasafe@1.3.0': {}
+
+  '@faker-js/faker@8.4.1': {}
 
   '@gerrit0/mini-shiki@3.6.0':
     dependencies:

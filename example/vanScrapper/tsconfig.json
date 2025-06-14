@@ -3,7 +3,7 @@
     "target": "ES2022",
     "module": "CommonJS",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -11,5 +11,5 @@
     "lib": ["ES2022", "DOM"], // <-- ajoute DOM et ES2022 ici
     "types": ["node"] // <-- ajoute node ici
   },
-  "include": ["src"]
+  "include": ["src", "generated"]
 }
