@@ -30,3 +30,6 @@ pnpm install
 pnpm --filter @mocktailgpt/ts build
 cd example/vanScrapper && pnpm generate
 ```
+
+Copy `.env.example` to `.env` and fill in your OpenAI credentials. If no API key
+is provided the example will run in mock mode.

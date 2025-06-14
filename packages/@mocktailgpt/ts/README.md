@@ -75,6 +75,18 @@ export const globalMutator = async (config: RequestInit) => {
 
 The generated MSW setup allows you to run the SDK completely offline by starting the worker in development mode.
 
+## Environment variables
+
+Create a `.env` file based on the provided `.env.example` and set your OpenAI credentials:
+
+```
+OPENAI_API_KEY=
+OPENAI_ORG_ID=
+OPENAI_API_BASE_URL=
+```
+
+If `OPENAI_API_KEY` is missing the generated `globalMutator` uses `globalMockMutator` instead and logs `"Mock mode (no OPENAI_API_KEY)"`.
+
 ## Example project
 
 See [`example/VanScrapper`](../../example/vanScrapper) for a reference integration using Vite and MSW.

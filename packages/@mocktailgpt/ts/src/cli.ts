@@ -154,8 +154,13 @@ export const generate = (argv: string[]) => {
     fs.writeFileSync(
       gmPath,
       `import { openaiMutator } from "@mocktailgpt/ts";\n` +
+        `import { globalMockMutator } from './globalMockMutator';\n` +
         `import userMutator from "${resolved}";\n` +
         `export const globalMutator = async (opts: any) => {\n` +
+        `  if (!process.env.OPENAI_API_KEY) {\n` +
+        `    console.log('Mock mode (no OPENAI_API_KEY)');\n` +
+        `    return globalMockMutator(opts);\n` +
+        `  }\n` +
         `  await openaiMutator(opts);\n` +
         `  if (typeof userMutator === 'function') return userMutator(opts);\n` +
         `  if (userMutator && typeof userMutator.default === 'function') return userMutator.default(opts);\n` +
@@ -166,7 +171,14 @@ export const generate = (argv: string[]) => {
     fs.writeFileSync(
       gmPath,
       `import { openaiMutator } from "@mocktailgpt/ts";\n` +
-        `export const globalMutator = openaiMutator;\n`,
+        `import { globalMockMutator } from './globalMockMutator';\n` +
+        `export const globalMutator = async (opts: any) => {\n` +
+        `  if (!process.env.OPENAI_API_KEY) {\n` +
+        `    console.log('Mock mode (no OPENAI_API_KEY)');\n` +
+        `    return globalMockMutator(opts);\n` +
+        `  }\n` +
+        `  return openaiMutator(opts);\n` +
+        `};\n`,
     );
   }
 
@@ -185,6 +197,29 @@ export const generate = (argv: string[]) => {
   const swagger = yaml.load(
     fs.readFileSync(path.resolve(input), "utf8"),
   ) as any;
+
+  if (!swagger.openapi) {
+    console.error("Invalid Swagger: missing 'openapi'");
+    process.exit(1);
+  }
+  if (!swagger.paths) {
+    console.error("Invalid Swagger: missing 'paths'");
+    process.exit(1);
+  }
+
+  for (const [p, ops] of Object.entries(swagger.paths as Record<string, any>)) {
+    for (const [method, op] of Object.entries(ops as Record<string, any>)) {
+      if (!op.operationId) {
+        console.error(`Missing operationId for ${method.toUpperCase()} ${p}`);
+        process.exit(1);
+      }
+      if (!op["x-model"]) {
+        console.error(`Missing x-model for operation ${op.operationId}`);
+        process.exit(1);
+      }
+    }
+  }
+
   const paths = swagger.paths || {};
 
   const gmMockPath = path.join(outDir, "globalMockMutator.ts");

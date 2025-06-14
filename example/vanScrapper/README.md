@@ -11,6 +11,8 @@ pnpm install
 pnpm generate
 ```
 
+Copy `.env.example` to `.env` at the repository root and provide your OpenAI credentials. Without a key the SDK will operate using mocks.
+
 In development you can start the MSW worker automatically:
 
 ```ts

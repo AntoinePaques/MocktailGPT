@@ -30,6 +30,9 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@mocktailgpt/ts
     devDependencies:
+      '@types/node':
+        specifier: ^24.0.1
+        version: 24.0.1
       rimraf:
         specifier: ^5.0.0
         version: 5.0.10
