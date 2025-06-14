@@ -71,6 +71,120 @@ export const run = (configPath?: string) => {
   spawnSync(orvalBin, ["--config", tempCfg], { stdio: "inherit" });
 };
 
+const parseArgs = (argv: string[]) => {
+  const out: Record<string, string | boolean> = {};
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a.startsWith("--")) {
+      const key = a.slice(2);
+      const next = argv[i + 1];
+      if (next && !next.startsWith("--")) {
+        out[key] = next;
+        i++;
+      } else {
+        out[key] = true;
+      }
+    }
+  }
+  return out;
+};
+
+const loadConfig = (p: string) => {
+  if (!fs.existsSync(p)) return {};
+  const raw = fs.readFileSync(p, "utf8");
+  const js = raw.replace(/export\s+default/, "module.exports =");
+  const tmp = path.join(os.tmpdir(), "mocktail-config.js");
+  fs.writeFileSync(tmp, js);
+  return require(tmp);
+};
+
+export const generate = (argv: string[]) => {
+  const args = parseArgs(argv);
+  const cfgPath = (args.config as string) || "mocktail.config.ts";
+  const cfg = loadConfig(cfgPath);
+  const input = (args.input as string) || cfg.input || "./swagger.yaml";
+  const outDir = (args.output as string) || cfg.output || "generated";
+  const force = !!args.force;
+  if (fs.existsSync(outDir)) {
+    if (!force) {
+      console.error(
+        `Directory ${outDir} already exists. Use --force to overwrite.`,
+      );
+      process.exit(1);
+    }
+    fs.rmSync(outDir, { recursive: true, force: true });
+  }
+  fs.mkdirSync(outDir, { recursive: true });
+
+  const baseMutator = path.join(__dirname, "mutators/openaiMutator.ts");
+  let mutatorPath = baseMutator;
+  if (cfg.mutator) {
+    const wrapper = path.join(os.tmpdir(), "mocktail-user-mutator.js");
+    fs.writeFileSync(
+      wrapper,
+      `const { openaiMutator } = require('${baseMutator}');\n` +
+        `const user = require('${path.resolve(cfg.mutator)}');\n` +
+        `module.exports = async opts => {\n` +
+        `  await openaiMutator(opts);\n` +
+        `  if (typeof user === 'function') return user(opts);\n` +
+        `  if (user && typeof user.default === 'function') return user.default(opts);\n` +
+        `};\n`,
+    );
+    mutatorPath = wrapper;
+  }
+
+  const orvalCfg = {
+    client: {
+      input: { target: path.resolve(input) },
+      output: {
+        mode: "single",
+        target: path.join(path.resolve(outDir), "client.ts"),
+        client: "fetch",
+        schemas: path.join(path.resolve(outDir), "models"),
+        mock: true,
+        override: {
+          mutator: { path: mutatorPath },
+          mock: {
+            properties: {
+              path: path.join(__dirname, "mutators/mockMutator.ts"),
+            },
+          },
+        },
+      },
+    },
+    sdk: {
+      input: { target: path.join(__dirname, "../mocktail.sdk.yaml") },
+      output: {
+        mode: "single",
+        target: path.join(path.resolve(outDir), "sdk.ts"),
+        client: "fetch",
+      },
+    },
+  } as any;
+
+  const tempCfg = path.join(os.tmpdir(), "mocktail-generate.json");
+  fs.writeFileSync(tempCfg, JSON.stringify(orvalCfg, null, 2));
+  const orvalBin = path.join(__dirname, "../node_modules/.bin/orval");
+  spawnSync(orvalBin, ["--config", tempCfg], { stdio: "inherit" });
+
+  const tplDir = path.join(__dirname, "../templates");
+  const files = [
+    "globalMutator.ts",
+    "globalMockMutator.ts",
+    "msw.ts",
+    "mockServiceWorker.js",
+    "index.ts",
+  ];
+  for (const f of files) {
+    fs.copyFileSync(path.join(tplDir, f), path.join(outDir, f));
+  }
+};
+
 if (require.main === module) {
-  run(process.argv[2]);
+  const [cmd, ...rest] = process.argv.slice(2);
+  if (cmd === "generate") {
+    generate(rest);
+  } else {
+    run(cmd);
+  }
 }

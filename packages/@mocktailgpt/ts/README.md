@@ -6,11 +6,13 @@ Generic OpenAPI based SDK generator.
 
 ## Usage
 
-Place a `swagger.yaml` next to `orval.config.js` then run:
+Place a `swagger.yaml` next to `mocktail.config.ts` then run:
 
 ```bash
-mocktail
+mocktail generate
 ```
+
+The legacy `mocktail` command without sub-commands still works and accepts an optional config path.
 
 The CLI wraps `orval` with default mutators based on OpenAI.
 Vendor extension keys are defined in `src/vendorExtensions.ts` and merged with your specification.
