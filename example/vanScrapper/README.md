@@ -9,7 +9,7 @@ Generate a typed SDK for the van scrapper API and try it in both real and mock m
 ## ⚙️ Generate the SDK
 
 ```bash
-pnpm install
+pnpm install    # builds and links the local mocktail CLI
 pnpm run generate
 ```
 
