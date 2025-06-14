@@ -1,34 +1,33 @@
-# vanScrapper example
+# VanScrapper example
 
-Built with ChatGPT for CHATGPT but reviewed by human.
+This demo shows how to use **Mocktail** to build an OpenAI powered client from a business Swagger file.
 
-This example consumes the `@mocktailgpt/ts` package.
+## 🎯 Goal
 
-## Quick start
+Generate a typed SDK for the van scrapper API and try it in both real and mock modes.
+
+## ⚙️ Generate the SDK
 
 ```bash
 pnpm install
-pnpm generate
+pnpm run generate
 ```
 
-Copy `.env.example` to `.env` at the repository root and provide your OpenAI credentials. Without a key the SDK will operate using mocks.
+The generation uses `mocktail.config.ts` to locate `swagger.yaml` and the output folder.
 
-In development you can start the MSW worker automatically:
+The swagger file can be found at `swagger.yaml`.
+
+Copy `.env.example` to `.env` in the repository root and add your OpenAI credentials if you want real calls. Without a key all calls are mocked.
+
+## 🧪 Test with MSW
+
+Start the worker in development to intercept requests:
 
 ```ts
-if ((import.meta as any).env?.MODE === 'development') {
-  const { worker } = await import('./generated/msw')
-  await worker.start()
+if (process.env.NODE_ENV === 'development') {
+  const { worker } = await import('./generated/msw');
+  await worker.start();
 }
 ```
 
-The provided `swagger.yaml` is used to generate types, API client and mocks.
-
-Vendor extensions (`x-*`) can be used inside the spec to control the OpenAI request:
-
-- `x-model`
-- `x-temperature`
-- `x-operation-type`
-- `x-prompt`
-
-Edit these keys in `swagger.yaml` to change how the OpenAI requests behave before running `pnpm generate`.
+The project depends on [`@mocktailgpt/ts`](../../packages/@mocktailgpt/ts).

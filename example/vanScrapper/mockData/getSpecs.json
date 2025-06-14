@@ -1,0 +1,10 @@
+{
+  "id": "mock-id",
+  "object": "chat.completion",
+  "created": 0,
+  "model": "gpt-4o",
+  "choices": [{
+    "index": 0,
+    "message": { "role": "assistant", "content": "Specs mocked" }
+  }]
+}

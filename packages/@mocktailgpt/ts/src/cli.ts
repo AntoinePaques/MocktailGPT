@@ -4,6 +4,7 @@ import path from "path";
 import fs from "fs";
 import os from "os";
 import yaml from "js-yaml";
+import ora from "ora";
 
 // TODO: support merging global mock mutator when provided by the user
 
@@ -101,8 +102,11 @@ const loadConfig = (p: string) => {
 
 export const generate = (argv: string[]) => {
   const args = parseArgs(argv);
+  const loadSpin = ora("Loading config").start();
   const cfgPath = (args.config as string) || "mocktail.config.ts";
   const cfg = loadConfig(cfgPath);
+  loadSpin.succeed("Config loaded");
+  const useMsw = cfg.msw !== false;
   const input = (args.input as string) || cfg.input || "./swagger.yaml";
   const outDir = (args.output as string) || cfg.output || "generated";
   const force = !!args.force;
@@ -116,6 +120,37 @@ export const generate = (argv: string[]) => {
     fs.rmSync(outDir, { recursive: true, force: true });
   }
   fs.mkdirSync(outDir, { recursive: true });
+
+  const validateSpin = ora("Validating Swagger").start();
+  const swaggerPath = path.resolve(input);
+  const swagger = yaml.load(fs.readFileSync(swaggerPath, "utf8")) as any;
+  if (!swagger.openapi) {
+    validateSpin.fail("Invalid Swagger: missing 'openapi'");
+    process.exit(1);
+  }
+  if (!swagger.paths) {
+    validateSpin.fail("Invalid Swagger: missing 'paths'");
+    process.exit(1);
+  }
+  let vendorFound = false;
+  for (const [p, ops] of Object.entries(swagger.paths as Record<string, any>)) {
+    for (const [method, op] of Object.entries(ops as Record<string, any>)) {
+      if (!op.operationId) {
+        validateSpin.fail(
+          `Missing operationId for ${method.toUpperCase()} ${p}`,
+        );
+        process.exit(1);
+      }
+      if (op["x-model"] || op["x-operation-type"]) vendorFound = true;
+    }
+  }
+  if (!vendorFound) {
+    validateSpin.fail(
+      "Swagger missing x-model or x-operation-type on operations",
+    );
+    process.exit(1);
+  }
+  validateSpin.succeed("Swagger valid");
 
   const mutatorPath = path.join(path.resolve(outDir), "globalMutator.ts");
 
@@ -156,7 +191,7 @@ export const generate = (argv: string[]) => {
       `import { openaiMutator } from "@mocktailgpt/ts";\n` +
         `import { globalMockMutator } from './globalMockMutator';\n` +
         `import userMutator from "${resolved}";\n` +
-        `export const globalMutator = async (opts: any) => {\n` +
+        `const globalMutator = async (opts: any) => {\n` +
         `  if (!process.env.OPENAI_API_KEY) {\n` +
         `    console.log('Mock mode (no OPENAI_API_KEY)');\n` +
         `    return globalMockMutator(opts);\n` +
@@ -165,60 +200,47 @@ export const generate = (argv: string[]) => {
         `  if (typeof userMutator === 'function') return userMutator(opts);\n` +
         `  if (userMutator && typeof userMutator.default === 'function') return userMutator.default(opts);\n` +
         `  if (userMutator && typeof userMutator.mutator === 'function') return userMutator.mutator(opts);\n` +
-        `};\n`,
+        `};\n` +
+        `export default globalMutator;\n`,
     );
   } else {
     fs.writeFileSync(
       gmPath,
       `import { openaiMutator } from "@mocktailgpt/ts";\n` +
         `import { globalMockMutator } from './globalMockMutator';\n` +
-        `export const globalMutator = async (opts: any) => {\n` +
+        `const globalMutator = async (opts: any) => {\n` +
         `  if (!process.env.OPENAI_API_KEY) {\n` +
         `    console.log('Mock mode (no OPENAI_API_KEY)');\n` +
         `    return globalMockMutator(opts);\n` +
         `  }\n` +
         `  return openaiMutator(opts);\n` +
-        `};\n`,
+        `};\n` +
+        `export default globalMutator;\n`,
     );
   }
 
   const tempCfg = path.join(os.tmpdir(), "mocktail-generate.json");
   fs.writeFileSync(tempCfg, JSON.stringify(orvalCfg, null, 2));
   const orvalBin = path.join(__dirname, "../node_modules/.bin/orval");
+  const genSpin = ora("Generating SDK with Orval").start();
   spawnSync(orvalBin, ["--config", tempCfg], { stdio: "inherit" });
+  genSpin.succeed("Orval generation complete");
 
-  console.log("Generating mocks...");
+  const indexSpin = ora("Generating index.ts").start();
   const tplDir = path.join(__dirname, "../templates");
-  const staticFiles = ["mockServiceWorker.js", "index.ts"];
-  for (const f of staticFiles) {
-    fs.copyFileSync(path.join(tplDir, f), path.join(outDir, f));
+  let indexContent = fs.readFileSync(path.join(tplDir, "index.ts"), "utf8");
+  if (!useMsw) {
+    indexContent = indexContent.replace(/export \* from \'.\/msw\';?\n/, "");
+  } else {
+    fs.copyFileSync(
+      path.join(tplDir, "mockServiceWorker.js"),
+      path.join(outDir, "mockServiceWorker.js"),
+    );
   }
+  fs.writeFileSync(path.join(outDir, "index.ts"), indexContent);
+  indexSpin.succeed("index.ts generated");
 
-  const swagger = yaml.load(
-    fs.readFileSync(path.resolve(input), "utf8"),
-  ) as any;
-
-  if (!swagger.openapi) {
-    console.error("Invalid Swagger: missing 'openapi'");
-    process.exit(1);
-  }
-  if (!swagger.paths) {
-    console.error("Invalid Swagger: missing 'paths'");
-    process.exit(1);
-  }
-
-  for (const [p, ops] of Object.entries(swagger.paths as Record<string, any>)) {
-    for (const [method, op] of Object.entries(ops as Record<string, any>)) {
-      if (!op.operationId) {
-        console.error(`Missing operationId for ${method.toUpperCase()} ${p}`);
-        process.exit(1);
-      }
-      if (!op["x-model"]) {
-        console.error(`Missing x-model for operation ${op.operationId}`);
-        process.exit(1);
-      }
-    }
-  }
+  const mockSpin = ora("Generating mocks").start();
 
   const paths = swagger.paths || {};
 
@@ -233,34 +255,65 @@ export const generate = (argv: string[]) => {
       }
     }
   }
+  const mockSwitch = opCases.join("\n");
   fs.writeFileSync(
     gmMockPath,
-    `export const globalMockMutator = async (opts: any) => {\n  const id = 'mock-' + Math.random().toString(36).slice(2);\n  const op = opts.operation?.operationId;\n  let content = 'Mocked response';\n  switch (op) {\n${opCases.join("\n")}\n    default:\n      break;\n  }\n  return {\n    id,\n    object: 'chat.completion',\n    created: Date.now(),\n    model: 'gpt-4o',\n    choices: [{ index: 0, message: { role: 'assistant', content } }],\n  };\n};\n`,
+    [
+      "import fs from 'fs';",
+      "import path from 'path';",
+      "",
+      "export const globalMockMutator = async (opts: any) => {",
+      "  const id = 'mock-' + Math.random().toString(36).slice(2);",
+      "  const op = opts.operation?.operationId as string;",
+      "  const file = path.join(__dirname, 'mockData', `${op}.json`);",
+      "  if (op && fs.existsSync(file)) {",
+      "    return JSON.parse(fs.readFileSync(file, 'utf8'));",
+      "  }",
+      "  let content = 'Mocked response';",
+      "  switch (op) {",
+      mockSwitch,
+      "    default:",
+      "      break;",
+      "  }",
+      "  return {",
+      "    id,",
+      "    object: 'chat.completion',",
+      "    created: Date.now(),",
+      "    model: 'gpt-4o',",
+      "    choices: [{ index: 0, message: { role: 'assistant', content } }],",
+      "  };",
+      "};",
+      "",
+    ].join("\n"),
   );
 
-  const mswPath = path.join(outDir, "msw.ts");
-  const handlers: string[] = [];
-  for (const [p, ops] of Object.entries(paths)) {
-    for (const [method, op] of Object.entries(ops as Record<string, any>)) {
-      const opId = op.operationId || "";
-      handlers.push(
-        `  rest.${method}('${p}', async (_req, res, ctx) => {\n` +
-          `    const json = await globalMockMutator({ operation: { operationId: '${opId}' } });\n` +
-          `    return res(ctx.json(json as any));\n` +
-          `  }),`,
-      );
+  if (useMsw) {
+    const mswPath = path.join(outDir, "msw.ts");
+    const handlers: string[] = [];
+    for (const [p, ops] of Object.entries(paths)) {
+      for (const [method, op] of Object.entries(ops as Record<string, any>)) {
+        const opId = op.operationId || "";
+        handlers.push(
+          `  http.${method}('${p}', async () => {\n` +
+            `    const json = await globalMockMutator({ operation: { operationId: '${opId}' } });\n` +
+            `    return HttpResponse.json(json as any);\n` +
+            `  }),`,
+        );
+      }
     }
+    fs.writeFileSync(
+      mswPath,
+      `import { http, HttpResponse } from 'msw';\n` +
+        `import { setupWorker } from 'msw/browser';\n` +
+        `import { setupServer } from 'msw/node';\n` +
+        `import { globalMockMutator } from './globalMockMutator';\n\n` +
+        `export const handlers = [\n${handlers.join("\n")}\n];\n\n` +
+        `export const worker = setupWorker(...handlers);\n` +
+        `export const server = setupServer(...handlers);\n`,
+    );
   }
-  fs.writeFileSync(
-    mswPath,
-    `import { rest, setupWorker, setupServer } from 'msw';\n` +
-      `import { globalMockMutator } from './globalMockMutator';\n\n` +
-      `export const handlers = [\n${handlers.join("\n")}\n];\n\n` +
-      `export const worker = setupWorker(...handlers);\n` +
-      `export const server = setupServer(...handlers);\n`,
-  );
-
-  console.log("Done");
+  mockSpin.succeed("Mocks generated");
+  ora("Done").succeed();
 };
 
 if (require.main === module) {
