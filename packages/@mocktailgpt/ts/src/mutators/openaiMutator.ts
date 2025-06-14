@@ -1,7 +1,12 @@
 import { globalMutatorFactory, OperationType } from "./globalMutatorFactory";
 import OpenAI from "openai";
+import "dotenv/config";
 
-const client = new OpenAI({});
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  organization: process.env.OPENAI_ORG_ID,
+  baseURL: process.env.OPENAI_API_BASE_URL,
+});
 
 const dispatcher = async (
   type: OperationType,
