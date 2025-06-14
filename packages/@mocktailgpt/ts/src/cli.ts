@@ -91,20 +91,18 @@ const parseArgs = (argv: string[]) => {
   return out;
 };
 
-const loadConfig = (p: string) => {
+const loadConfig = async (p: string) => {
   if (!fs.existsSync(p)) return {};
-  const raw = fs.readFileSync(p, "utf8");
-  const js = raw.replace(/export\s+default/, "module.exports =");
-  const tmp = path.join(os.tmpdir(), "mocktail-config.js");
-  fs.writeFileSync(tmp, js);
-  return require(tmp);
+  await import("tsx" as any);
+  const mod = require(path.resolve(p));
+  return mod?.default || mod;
 };
 
-export const generate = (argv: string[]) => {
+export const generate = async (argv: string[]) => {
   const args = parseArgs(argv);
   const loadSpin = ora("Loading config").start();
   const cfgPath = (args.config as string) || "mocktail.config.ts";
-  const cfg = loadConfig(cfgPath);
+  const cfg = await loadConfig(cfgPath);
   loadSpin.succeed("Config loaded");
   const useMsw = cfg.msw !== false;
   const input = (args.input as string) || cfg.input || "./swagger.yaml";
@@ -319,7 +317,10 @@ export const generate = (argv: string[]) => {
 if (require.main === module) {
   const [cmd, ...rest] = process.argv.slice(2);
   if (cmd === "generate") {
-    generate(rest);
+    generate(rest).catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
   } else {
     run(cmd);
   }

@@ -11,7 +11,7 @@ This monorepo provides a generic OpenAPI SDK generator and an example project.
 
 ## Workflow
 
-Run `pnpm install` to set up the workspace. The install step now builds the local `@mocktailgpt/ts` package and links the `mocktail` CLI automatically. After installation you can generate the example client directly with `cd example/vanScrapper && pnpm generate` (which internally calls `mocktail generate`). Use `pnpm lint` and `pnpm test` for quality checks. The `mocktail generate` command accepts `--config`, `--input`, `--output` and `--force` options.
+Run `pnpm install` to set up the workspace. The install step now builds the local `@mocktailgpt/ts` package and links the `mocktail` CLI automatically. Configuration is loaded at runtime with `tsx`, so `mocktail.config.ts` works without any build step. After installation you can generate the example client directly with `cd example/vanScrapper && pnpm generate` (which internally calls `mocktail generate`). Use `pnpm lint` and `pnpm test` for quality checks. The `mocktail generate` command accepts `--config`, `--input`, `--output` and `--force` options.
 
 The generator produces a full mocking environment based on MSW. After running
 `mocktail generate` you can start the worker in development mode:

@@ -13,7 +13,7 @@ pnpm install    # builds and links the local mocktail CLI
 pnpm run generate
 ```
 
-The generation uses `mocktail.config.ts` to locate `swagger.yaml` and the output folder.
+The generation uses `mocktail.config.ts` to locate `swagger.yaml` and the output folder. The file is executed with `tsx` so you can keep it in TypeScript.
 
 The swagger file can be found at `swagger.yaml`.
 
