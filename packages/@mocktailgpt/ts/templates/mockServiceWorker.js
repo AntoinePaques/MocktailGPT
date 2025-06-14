@@ -1,0 +1,1 @@
+// Placeholder MSW worker script

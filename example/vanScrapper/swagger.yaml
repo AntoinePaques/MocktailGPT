@@ -1,0 +1,31 @@
+openapi: 3.0.0
+info:
+  title: Van Scrapper API
+  version: 1.0.0
+paths:
+  /specs:
+    post:
+      operationId: getSpecs
+      x-model: gpt-4o
+      x-operation-type: chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                brand:
+                  type: string
+                engine:
+                  type: string
+      responses:
+        '200':
+          description: Specs result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
