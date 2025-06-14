@@ -3,6 +3,7 @@ import { spawnSync } from "child_process";
 import path from "path";
 import fs from "fs";
 import os from "os";
+import yaml from "js-yaml";
 
 // TODO: support merging global mock mutator when provided by the user
 
@@ -116,9 +117,7 @@ export const generate = (argv: string[]) => {
   }
   fs.mkdirSync(outDir, { recursive: true });
 
-  const baseMutator = path.join(__dirname, "mutators/openaiMutator.ts");
-  let mutatorPath = path.join(outDir, "globalMutator.ts");
-  // globalMutator file will be written later
+  const mutatorPath = path.join(path.resolve(outDir), "globalMutator.ts");
 
   const orvalCfg = {
     client: {
@@ -149,24 +148,6 @@ export const generate = (argv: string[]) => {
     },
   } as any;
 
-  const tempCfg = path.join(os.tmpdir(), "mocktail-generate.json");
-  fs.writeFileSync(tempCfg, JSON.stringify(orvalCfg, null, 2));
-  const orvalBin = path.join(__dirname, "../node_modules/.bin/orval");
-  spawnSync(orvalBin, ["--config", tempCfg], { stdio: "inherit" });
-
-  console.log("Copying helper templates...");
-  const tplDir = path.join(__dirname, "../templates");
-  const files = [
-    "globalMockMutator.ts",
-    "msw.ts",
-    "mockServiceWorker.js",
-    "index.ts",
-  ];
-  for (const f of files) {
-    fs.copyFileSync(path.join(tplDir, f), path.join(outDir, f));
-  }
-
-  console.log("Writing global mutator...");
   const gmPath = path.join(outDir, "globalMutator.ts");
   if (cfg.mutator) {
     const resolved = path.resolve(cfg.mutator);
@@ -188,6 +169,61 @@ export const generate = (argv: string[]) => {
         `export const globalMutator = openaiMutator;\n`,
     );
   }
+
+  const tempCfg = path.join(os.tmpdir(), "mocktail-generate.json");
+  fs.writeFileSync(tempCfg, JSON.stringify(orvalCfg, null, 2));
+  const orvalBin = path.join(__dirname, "../node_modules/.bin/orval");
+  spawnSync(orvalBin, ["--config", tempCfg], { stdio: "inherit" });
+
+  console.log("Generating mocks...");
+  const tplDir = path.join(__dirname, "../templates");
+  const staticFiles = ["mockServiceWorker.js", "index.ts"];
+  for (const f of staticFiles) {
+    fs.copyFileSync(path.join(tplDir, f), path.join(outDir, f));
+  }
+
+  const swagger = yaml.load(
+    fs.readFileSync(path.resolve(input), "utf8"),
+  ) as any;
+  const paths = swagger.paths || {};
+
+  const gmMockPath = path.join(outDir, "globalMockMutator.ts");
+  const opCases: string[] = [];
+  for (const ops of Object.values(paths) as any[]) {
+    for (const [method, op] of Object.entries(ops as Record<string, any>)) {
+      if (op && op.operationId) {
+        opCases.push(
+          `    case '${op.operationId}':\n      content = '${op.operationId} mocked response';\n      break;`,
+        );
+      }
+    }
+  }
+  fs.writeFileSync(
+    gmMockPath,
+    `export const globalMockMutator = async (opts: any) => {\n  const id = 'mock-' + Math.random().toString(36).slice(2);\n  const op = opts.operation?.operationId;\n  let content = 'Mocked response';\n  switch (op) {\n${opCases.join("\n")}\n    default:\n      break;\n  }\n  return {\n    id,\n    object: 'chat.completion',\n    created: Date.now(),\n    model: 'gpt-4o',\n    choices: [{ index: 0, message: { role: 'assistant', content } }],\n  };\n};\n`,
+  );
+
+  const mswPath = path.join(outDir, "msw.ts");
+  const handlers: string[] = [];
+  for (const [p, ops] of Object.entries(paths)) {
+    for (const [method, op] of Object.entries(ops as Record<string, any>)) {
+      const opId = op.operationId || "";
+      handlers.push(
+        `  rest.${method}('${p}', async (_req, res, ctx) => {\n` +
+          `    const json = await globalMockMutator({ operation: { operationId: '${opId}' } });\n` +
+          `    return res(ctx.json(json as any));\n` +
+          `  }),`,
+      );
+    }
+  }
+  fs.writeFileSync(
+    mswPath,
+    `import { rest, setupWorker, setupServer } from 'msw';\n` +
+      `import { globalMockMutator } from './globalMockMutator';\n\n` +
+      `export const handlers = [\n${handlers.join("\n")}\n];\n\n` +
+      `export const worker = setupWorker(...handlers);\n` +
+      `export const server = setupServer(...handlers);\n`,
+  );
 
   console.log("Done");
 };

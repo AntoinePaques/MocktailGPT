@@ -17,7 +17,7 @@
     "build": "tsc -p tsconfig.json",
     "lint": "eslint src",
     "format": "prettier -w \"**/*.ts\"",
-    "test": "node dist/test/vendor.test.js"
+    "test": "node dist/test/vendor.test.js && node dist/test/generate.test.js"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
@@ -28,7 +28,9 @@
     "orval": "^7.1.0",
     "prettier": "^3.0.0",
     "rimraf": "^5.0.0",
-    "typescript": "^5.2.0"
+    "typescript": "^5.2.0",
+    "js-yaml": "^4.1.0",
+    "msw": "^2.10.2"
   },
   "dependencies": {
     "openai": "^4.0.0"

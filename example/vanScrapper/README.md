@@ -11,6 +11,15 @@ pnpm install
 pnpm generate
 ```
 
+In development you can start the MSW worker automatically:
+
+```ts
+if ((import.meta as any).env?.MODE === 'development') {
+  const { worker } = await import('./generated/msw')
+  await worker.start()
+}
+```
+
 The provided `swagger.yaml` is used to generate types, API client and mocks.
 
 Vendor extensions (`x-*`) can be used inside the spec to control the OpenAI request:

@@ -14,6 +14,9 @@ mocktail generate
 
 The command accepts `--config`, `--input`, `--output` and `--force` options to override defaults. Any custom `mutator` specified in the config will automatically be wrapped in the generated `globalMutator.ts`.
 
+Running `mocktail generate` also writes `msw.ts`, `mockServiceWorker.js` and
+`globalMockMutator.ts` in the output directory so you can mock the API locally.
+
 The legacy `mocktail` command without sub-commands still works and accepts an optional config path.
 
 The CLI wraps `orval` with default mutators based on OpenAI.
