@@ -33,6 +33,8 @@ Run the generator:
 mocktail generate
 ```
 
+Set `msw: false` in `mocktail.config.ts` if you don't need MSW handlers.
+
 ### Generated structure
 
 ```

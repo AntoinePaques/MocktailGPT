@@ -13,7 +13,7 @@
     "lint": "eslint src",
     "build": "tsc",
     "format": "prettier -w \"**/*.ts\"",
-    "generate": "node ../../packages/@mocktailgpt/ts/dist/cli.js ../../packages/@mocktailgpt/ts/orval.config.js",
+    "generate": "mocktail generate --force",
     "test": "echo no tests"
   },
   "devDependencies": {

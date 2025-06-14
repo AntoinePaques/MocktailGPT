@@ -13,6 +13,8 @@ pnpm install
 pnpm run generate
 ```
 
+The generation uses `mocktail.config.ts` to locate `swagger.yaml` and the output folder.
+
 The swagger file can be found at `swagger.yaml`.
 
 Copy `.env.example` to `.env` in the repository root and add your OpenAI credentials if you want real calls. Without a key all calls are mocked.

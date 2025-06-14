@@ -106,6 +106,7 @@ export const generate = (argv: string[]) => {
   const cfgPath = (args.config as string) || "mocktail.config.ts";
   const cfg = loadConfig(cfgPath);
   loadSpin.succeed("Config loaded");
+  const useMsw = cfg.msw !== false;
   const input = (args.input as string) || cfg.input || "./swagger.yaml";
   const outDir = (args.output as string) || cfg.output || "generated";
   const force = !!args.force;
@@ -227,10 +228,16 @@ export const generate = (argv: string[]) => {
 
   const indexSpin = ora("Generating index.ts").start();
   const tplDir = path.join(__dirname, "../templates");
-  const staticFiles = ["mockServiceWorker.js", "index.ts"];
-  for (const f of staticFiles) {
-    fs.copyFileSync(path.join(tplDir, f), path.join(outDir, f));
+  let indexContent = fs.readFileSync(path.join(tplDir, "index.ts"), "utf8");
+  if (!useMsw) {
+    indexContent = indexContent.replace(/export \* from \'.\/msw\';?\n/, "");
+  } else {
+    fs.copyFileSync(
+      path.join(tplDir, "mockServiceWorker.js"),
+      path.join(outDir, "mockServiceWorker.js"),
+    );
   }
+  fs.writeFileSync(path.join(outDir, "index.ts"), indexContent);
   indexSpin.succeed("index.ts generated");
 
   const mockSpin = ora("Generating mocks").start();
@@ -280,29 +287,31 @@ export const generate = (argv: string[]) => {
     ].join("\n"),
   );
 
-  const mswPath = path.join(outDir, "msw.ts");
-  const handlers: string[] = [];
-  for (const [p, ops] of Object.entries(paths)) {
-    for (const [method, op] of Object.entries(ops as Record<string, any>)) {
-      const opId = op.operationId || "";
-      handlers.push(
-        `  http.${method}('${p}', async () => {\n` +
-          `    const json = await globalMockMutator({ operation: { operationId: '${opId}' } });\n` +
-          `    return HttpResponse.json(json as any);\n` +
-          `  }),`,
-      );
+  if (useMsw) {
+    const mswPath = path.join(outDir, "msw.ts");
+    const handlers: string[] = [];
+    for (const [p, ops] of Object.entries(paths)) {
+      for (const [method, op] of Object.entries(ops as Record<string, any>)) {
+        const opId = op.operationId || "";
+        handlers.push(
+          `  http.${method}('${p}', async () => {\n` +
+            `    const json = await globalMockMutator({ operation: { operationId: '${opId}' } });\n` +
+            `    return HttpResponse.json(json as any);\n` +
+            `  }),`,
+        );
+      }
     }
+    fs.writeFileSync(
+      mswPath,
+      `import { http, HttpResponse } from 'msw';\n` +
+        `import { setupWorker } from 'msw/browser';\n` +
+        `import { setupServer } from 'msw/node';\n` +
+        `import { globalMockMutator } from './globalMockMutator';\n\n` +
+        `export const handlers = [\n${handlers.join("\n")}\n];\n\n` +
+        `export const worker = setupWorker(...handlers);\n` +
+        `export const server = setupServer(...handlers);\n`,
+    );
   }
-  fs.writeFileSync(
-    mswPath,
-    `import { http, HttpResponse } from 'msw';\n` +
-      `import { setupWorker } from 'msw/browser';\n` +
-      `import { setupServer } from 'msw/node';\n` +
-      `import { globalMockMutator } from './globalMockMutator';\n\n` +
-      `export const handlers = [\n${handlers.join("\n")}\n];\n\n` +
-      `export const worker = setupWorker(...handlers);\n` +
-      `export const server = setupServer(...handlers);\n`,
-  );
   mockSpin.succeed("Mocks generated");
   ora("Done").succeed();
 };

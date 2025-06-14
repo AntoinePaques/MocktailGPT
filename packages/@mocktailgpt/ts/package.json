@@ -15,6 +15,7 @@
     "clean": "rimraf dist generated",
     "gen": "orval --config orval.config.js",
     "build": "tsc -p tsconfig.json",
+    "prepare": "pnpm run build",
     "lint": "eslint src",
     "format": "prettier -w \"**/*.ts\"",
     "test": "node dist/test/vendor.test.js && node dist/test/generate.test.js"
