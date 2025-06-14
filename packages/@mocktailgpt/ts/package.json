@@ -4,7 +4,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "mocktail.sdk.yaml",
+    "templates"
   ],
   "bin": {
     "mocktail": "dist/cli.js"

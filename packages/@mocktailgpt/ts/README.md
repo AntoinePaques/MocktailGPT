@@ -12,6 +12,8 @@ Place a `swagger.yaml` next to `mocktail.config.ts` then run:
 mocktail generate
 ```
 
+The command accepts `--config`, `--input`, `--output` and `--force` options to override defaults. Any custom `mutator` specified in the config will automatically be wrapped in the generated `globalMutator.ts`.
+
 The legacy `mocktail` command without sub-commands still works and accepts an optional config path.
 
 The CLI wraps `orval` with default mutators based on OpenAI.

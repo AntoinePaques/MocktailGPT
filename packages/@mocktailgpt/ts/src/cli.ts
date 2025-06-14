@@ -117,21 +117,8 @@ export const generate = (argv: string[]) => {
   fs.mkdirSync(outDir, { recursive: true });
 
   const baseMutator = path.join(__dirname, "mutators/openaiMutator.ts");
-  let mutatorPath = baseMutator;
-  if (cfg.mutator) {
-    const wrapper = path.join(os.tmpdir(), "mocktail-user-mutator.js");
-    fs.writeFileSync(
-      wrapper,
-      `const { openaiMutator } = require('${baseMutator}');\n` +
-        `const user = require('${path.resolve(cfg.mutator)}');\n` +
-        `module.exports = async opts => {\n` +
-        `  await openaiMutator(opts);\n` +
-        `  if (typeof user === 'function') return user(opts);\n` +
-        `  if (user && typeof user.default === 'function') return user.default(opts);\n` +
-        `};\n`,
-    );
-    mutatorPath = wrapper;
-  }
+  let mutatorPath = path.join(outDir, "globalMutator.ts");
+  // globalMutator file will be written later
 
   const orvalCfg = {
     client: {
@@ -167,9 +154,9 @@ export const generate = (argv: string[]) => {
   const orvalBin = path.join(__dirname, "../node_modules/.bin/orval");
   spawnSync(orvalBin, ["--config", tempCfg], { stdio: "inherit" });
 
+  console.log("Copying helper templates...");
   const tplDir = path.join(__dirname, "../templates");
   const files = [
-    "globalMutator.ts",
     "globalMockMutator.ts",
     "msw.ts",
     "mockServiceWorker.js",
@@ -178,6 +165,31 @@ export const generate = (argv: string[]) => {
   for (const f of files) {
     fs.copyFileSync(path.join(tplDir, f), path.join(outDir, f));
   }
+
+  console.log("Writing global mutator...");
+  const gmPath = path.join(outDir, "globalMutator.ts");
+  if (cfg.mutator) {
+    const resolved = path.resolve(cfg.mutator);
+    fs.writeFileSync(
+      gmPath,
+      `import { openaiMutator } from "@mocktailgpt/ts";\n` +
+        `import userMutator from "${resolved}";\n` +
+        `export const globalMutator = async (opts: any) => {\n` +
+        `  await openaiMutator(opts);\n` +
+        `  if (typeof userMutator === 'function') return userMutator(opts);\n` +
+        `  if (userMutator && typeof userMutator.default === 'function') return userMutator.default(opts);\n` +
+        `  if (userMutator && typeof userMutator.mutator === 'function') return userMutator.mutator(opts);\n` +
+        `};\n`,
+    );
+  } else {
+    fs.writeFileSync(
+      gmPath,
+      `import { openaiMutator } from "@mocktailgpt/ts";\n` +
+        `export const globalMutator = openaiMutator;\n`,
+    );
+  }
+
+  console.log("Done");
 };
 
 if (require.main === module) {
