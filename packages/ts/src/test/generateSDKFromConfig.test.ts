@@ -9,7 +9,7 @@ declare global {
 }
 
 vi.mock('../generator/generateOrvalConfig', () => ({
-  generateOrvalConfig: vi.fn(() => 'mock-orval.temp.config.ts'),
+  generateOrvalConfig: vi.fn(async () => 'mock-orval.temp.config.ts'),
 }));
 
 vi.mock('../generator/generatePostFiles', () => ({
@@ -45,7 +45,7 @@ describe('generateSDKFromConfig', () => {
     const succeed = globalThis.oraSucceed!;
 
     expect(start).toHaveBeenCalled();
-    expect(runCLIMock).toHaveBeenCalledWith(['--config', 'mock-orval.temp.config.ts']);
+    expect(runCLIMock).toHaveBeenCalledWith('mock-orval.temp.config.ts');
     expect(generatePostFiles).toHaveBeenCalledWith(resolve(process.cwd(), config.output));
     expect(succeed).toHaveBeenCalledWith('✅ SDK generated for swagger');
   });
