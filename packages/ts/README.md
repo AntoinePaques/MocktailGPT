@@ -40,6 +40,12 @@ const orvalConfigPath = generateOrvalConfig(config)
 
 Run the generator directly from your terminal. The CLI creates an
 `orval.config.js` in the current directory and runs Orval programmatically.
+After Orval completes it also generates helper files in the output directory:
+
+- `index.ts` that re-exports all generated modules
+- `msw.ts` exposing a `handlers` array from the mocks
+- `mockServiceWorker.js` starting an MSW worker
+
 You can pass `-c` or `--config` to use a custom Orval configuration path:
 
 ```bash

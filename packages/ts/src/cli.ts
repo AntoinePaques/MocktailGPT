@@ -4,6 +4,7 @@ import { resolve } from 'path'
 import { runCLI } from 'orval'
 import { loadConfig } from './config/loadConfig'
 import { generateOrvalConfig } from './generator/generateOrvalConfig'
+import { generatePostFiles } from './generator/generatePostFiles'
 
 async function main() {
   const args = process.argv.slice(2)
@@ -34,6 +35,7 @@ async function main() {
     try {
       await runCLI(['--config', orvalConfigPath])
       console.log('✅ Orval generation complete')
+      generatePostFiles(resolve(process.cwd(), config.output))
     } catch (err) {
       console.error('❌ Orval generation failed:', err)
       process.exit(1)
