@@ -31,10 +31,11 @@ vi.mock('ora', () => {
 describe('generateSDKFromConfig', () => {
   it('runs orval and updates spinner', async () => {
     const config: Config = {
-      swagger: './swagger.yaml',
+      input: './swagger.yaml',
       output: './out',
+      projectName: 'swagger',
       mock: false,
-      customMutators: false,
+      postFiles: { enabled: true },
     };
 
     const { generatePostFiles } = await import('../generator/generatePostFiles');
@@ -46,7 +47,10 @@ describe('generateSDKFromConfig', () => {
 
     expect(start).toHaveBeenCalled();
     expect(runCLIMock).toHaveBeenCalledWith('mock-orval.temp.config.ts');
-    expect(generatePostFiles).toHaveBeenCalledWith(resolve(process.cwd(), config.output));
+    expect(generatePostFiles).toHaveBeenCalledWith(
+      resolve(process.cwd(), config.output),
+      resolve(process.cwd(), config.output),
+    );
     expect(succeed).toHaveBeenCalledWith('✅ SDK generated for swagger');
   });
 });

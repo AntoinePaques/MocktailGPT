@@ -8,13 +8,29 @@ This repository houses multiple packages for the MocktailGPT project.
 with MSW mocks and a `mocktail` command line interface. The package can
 generate a `mocktail.orval.config.ts`, run [Orval](https://orval.dev) (either via the
 CLI or programmatically with `generateSDKFromConfig`), and create helper files
-(`index.ts`, `msw.ts`, `mockServiceWorker.js`).
+(`index.ts`, `msw.ts`, `mockServiceWorker.js` when `postFiles.enabled` is set).
 
-The CLI also offers an `init` command to scaffold a `mocktail.config.ts` from a
-Swagger file:
+The CLI also offers an `init` command to scaffold a `mocktail.config.ts` from an
+OpenAPI file:
 
 ```bash
-mocktail init --swagger ./path/to/swagger.yaml
+mocktail init --input ./path/to/openapi.yaml
+```
+
+The configuration file supports the following options with defaults:
+
+```ts
+import type { MocktailConfig } from '@mocktailgpt/ts';
+
+const config: MocktailConfig = {
+  input: 'swagger.yaml',
+  output: 'src/api',
+  projectName: 'default',
+  mock: true,
+  // postFiles: { enabled: true },
+};
+
+export default config;
 ```
 
 ## Development

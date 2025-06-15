@@ -1,63 +1,29 @@
-import { readdir, writeFile } from 'fs/promises';
+import { copyFile, writeFile } from 'fs/promises';
 import { join, relative } from 'path';
 import { formatWithPrettier } from '../utils/formatWithPrettier';
 
-async function collectTsFiles(dir: string, base: string = dir): Promise<string[]> {
-  const entries = await readdir(dir, { withFileTypes: true });
-  const files: string[] = [];
-  for (const entry of entries) {
-    const fullPath = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      files.push(...(await collectTsFiles(fullPath, base)));
-    } else if (
-      entry.isFile() &&
-      entry.name.endsWith('.ts') &&
-      entry.name !== 'index.ts' &&
-      entry.name !== 'msw.ts'
-    ) {
-      files.push(relative(base, fullPath).replace(/\\/g, '/'));
-    }
-  }
-  return files;
-}
+export async function generatePostFiles(generatedDir: string, outputDir: string) {
+  const mswSource = require.resolve('msw/browser');
+  const workerDest = join(outputDir, 'mockServiceWorker.js');
+  await copyFile(mswSource, workerDest);
 
-async function collectMswFiles(dir: string, base: string = dir): Promise<string[]> {
-  const entries = await readdir(dir, { withFileTypes: true });
-  const files: string[] = [];
-  for (const entry of entries) {
-    const fullPath = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      files.push(...(await collectMswFiles(fullPath, base)));
-    } else if (entry.isFile() && entry.name.endsWith('.msw.ts') && entry.name !== 'msw.ts') {
-      files.push(relative(base, fullPath).replace(/\\/g, '/'));
-    }
-  }
-  return files;
-}
-
-export async function generatePostFiles(baseDir: string) {
-  const files = await collectTsFiles(baseDir);
-  const exportLines = files
-    .map((file) => `export * from './${file.replace(/\.ts$/, '')}';`)
-    .join('\n');
-  const indexPath = join(baseDir, 'index.ts');
-  await writeFile(indexPath, exportLines + '\n');
-
-  const mswFiles = await collectMswFiles(baseDir);
-  const imports = mswFiles
-    .map((file, i) => `import { handlers as h${i} } from './${file.replace(/\.ts$/, '')}';`)
-    .join('\n');
-  const handlersArray = mswFiles.map((_f, i) => `...h${i}`).join(', ');
-  const mswContent = `${imports}\n\nexport const handlers = [${handlersArray}];\n`;
-  const mswPath = join(baseDir, 'msw.ts');
+  const rel = relative(outputDir, generatedDir).replace(/\\/g, '/');
+  const mswPath = join(outputDir, 'msw.ts');
+  const mswContent =
+    "import { setupWorker } from 'msw'\n" +
+    `import { handlers } from './${rel ? rel + '/' : ''}client.msw'\n` +
+    'export { handlers }\n' +
+    'export const worker = setupWorker(...handlers)\n';
   await writeFile(mswPath, mswContent);
 
-  const workerContent =
-    "import { setupWorker } from 'msw';\n" +
-    "import { handlers } from './msw';\n" +
-    'export const worker = setupWorker(...handlers);\n';
-  await writeFile(join(baseDir, 'mockServiceWorker.js'), workerContent);
+  const indexPath = join(outputDir, 'index.ts');
+  const indexContent =
+    `export * from './${rel ? rel + '/' : ''}client'\n` +
+    `export * from './${rel ? rel + '/' : ''}model'\n` +
+    "export * from './msw'\n";
+  await writeFile(indexPath, indexContent);
 
-  await formatWithPrettier(indexPath);
   await formatWithPrettier(mswPath);
+  await formatWithPrettier(indexPath);
+  await formatWithPrettier(workerDest);
 }

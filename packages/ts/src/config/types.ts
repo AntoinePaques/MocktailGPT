@@ -1,4 +1,3 @@
-import { z } from 'zod';
-import { schema } from './schema';
+import type { MocktailConfig } from './schema';
 
-export type Config = z.infer<typeof schema>;
+export type Config = MocktailConfig;

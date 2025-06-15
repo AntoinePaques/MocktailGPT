@@ -1,6 +1,7 @@
 import type { Config } from './config/types';
 export { loadConfig } from './config/loadConfig';
-export type { Config } from './config/types';
+export type { Config as MocktailConfig } from './config/types';
+export { MocktailConfigSchema } from './config/schema';
 export {
   generateOrvalConfig,
   getOrvalConfigObject,
