@@ -16,6 +16,10 @@ vi.mock('../generator/generatePostFiles', () => ({
   generatePostFiles: vi.fn(),
 }));
 
+vi.mock('../generator/generateMockFiles', () => ({
+  generateMockFiles: vi.fn(),
+}));
+
 const runCLIMock = vi.fn().mockResolvedValue(undefined);
 vi.mock('orval', () => ({ runCLI: runCLIMock }));
 
@@ -52,5 +56,23 @@ describe('generateSDKFromConfig', () => {
       resolve(process.cwd(), config.output),
     );
     expect(succeed).toHaveBeenCalledWith('✅ SDK generated for swagger');
+  });
+
+  it('generates mocks when enabled', async () => {
+    const config: Config = {
+      input: './swagger.yaml',
+      output: './out',
+      projectName: 'swagger',
+      mock: true,
+    };
+
+    const { generateMockFiles } = await import('../generator/generateMockFiles');
+
+    await generateSDKFromConfig(config);
+
+    expect(generateMockFiles).toHaveBeenCalledWith(
+      resolve(process.cwd(), config.output),
+      resolve(process.cwd(), 'public'),
+    );
   });
 });
