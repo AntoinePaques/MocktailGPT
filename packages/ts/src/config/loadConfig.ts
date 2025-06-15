@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { existsSync } from 'fs';
 import { ZodError } from 'zod';
-import { tsImport } from 'tsx/api';
+import { tsImport } from 'tsx/esm/api';
 import { MocktailConfigSchema } from './schema';
 import type { Config } from './types';
 

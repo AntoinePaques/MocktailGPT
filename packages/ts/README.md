@@ -1,13 +1,41 @@
 # @mocktailgpt/ts
 
-CLI tool scaffold for generating TypeScript clients from OpenAPI with MSW mocks.
+[![npm](https://img.shields.io/npm/v/@mocktailgpt/ts.svg)](https://www.npmjs.com/package/@mocktailgpt/ts)
 
-## Configuration
+CLI and utilities to turn an OpenAPI specification into a TypeScript SDK with optional [MSW](https://mswjs.io/) mocks.
 
-Create a `mocktail.config.ts` at the root of your project:
+## Présentation
+
+Mocktail transforme un fichier Swagger/OpenAPI en client TypeScript prêt à l'emploi. Sous le capot, il s'appuie sur [Orval](https://orval.dev) et ajoute l'injection de mutators ainsi que la génération de mocks pour MSW.
+
+## Installation
+
+```bash
+pnpm add @mocktailgpt/ts -D
+```
+
+Le package suppose l'existence d'un fichier `mocktail.config.ts` à la racine de votre projet.
+
+## Utilisation
+
+Initialiser la configuration :
+
+```bash
+mocktail init
+# ou directement
+mocktail init --yes
+```
+
+Générer le SDK :
+
+```bash
+mocktail generate
+```
+
+Exemple de `mocktail.config.ts` :
 
 ```ts
-import type { MocktailConfig } from '@mocktailgpt/ts';
+import type { MocktailConfig } from '@mocktailgpt/ts'
 
 const config: MocktailConfig = {
   input: 'swagger.yaml',
@@ -17,86 +45,18 @@ const config: MocktailConfig = {
   mock: true,
   postFiles: {
     enabled: true,
-    // output: '.', // optional path relative to `output`
   },
-};
+}
 
-export default config;
+export default config
 ```
 
-Available options (all optional):
+## Exemple
 
-- `input` _(default: `'swagger.yaml'`)_ – path to the OpenAPI file
-- `output` _(default: `'src/api'`)_ – destination folder for the generated SDK
-- `projectName` _(default: `'default'`)_ – name used for the Orval entry
-- `clientName` _(default: `'client'`)_ – name of the generated client file
-- `mock` _(default: `true`)_ – enable MSW mock generation
-- `postFiles` – generate helper files (`index.ts`)
+Le dossier [`example/vanScrapper`](../../example/vanScrapper) montre l'intégration dans une application Vite. Après exécution de `mocktail generate` on obtient le SDK dans `src/api` ainsi que les handlers MSW dans `public/`.
 
-Load it in your scripts with:
+## À venir
 
-```ts
-import { loadConfig } from '@mocktailgpt/ts';
-
-const config = await loadConfig('./mocktail.config.ts');
-```
-
-`loadConfig` returns defaults when the file is missing and throws if the
-configuration fails validation.
-
-### Generate an Orval configuration
-
-With the validated config you can create a `mocktail.orval.config.ts` for programmatic usage:
-
-```ts
-import { generateOrvalConfig } from '@mocktailgpt/ts';
-
-const orvalConfigPath = await generateOrvalConfig(config);
-// orvalConfigPath points to mocktail.orval.config.ts
-// await generate(orvalConfigPath)
-```
-
-### Generate the SDK programmatically
-
-If you prefer to run Orval directly, use `generateSDKFromConfig`:
-
-```ts
-import { generateSDKFromConfig } from '@mocktailgpt/ts';
-
-await generateSDKFromConfig(config);
-```
-
-## CLI
-
-Run the generator directly from your terminal. The CLI offers an `init` command
-to create a `mocktail.config.ts` interactively. Use `--yes` to skip prompts and
-generate the default configuration:
-
-```bash
-mocktail init
-# or
-mocktail init --yes
-```
-
-It also creates a `mocktail.orval.config.ts` in the current directory and runs Orval programmatically.
-If `postFiles.enabled` is true, helper files are generated after Orval.
-When `mock` is enabled, `msw.ts`, `index.ts` and `mockServiceWorker.js` are
-created inside the configured output directory. Existing files are left
-untouched.
-
-Future versions may add extra helpers or type definitions.
-
-## Development
-
-Available scripts:
-
-```bash
-pnpm build         # compile TypeScript
-pnpm clean         # remove build output and generated config
-pnpm dev           # clean then build
-pnpm generate      # run the CLI to generate the SDK
-```
-
-Formatting and linting are handled from the repository root with `pnpm format` and `pnpm lint`.
-Installing dependencies will run `pnpm prepare` to set up Husky at the root.
-The pre-commit hook formats and lints staged files via `lint-staged`.
+- Ajout de tests supplémentaires
+- Systèmes de presets (OpenAI, etc.)
+- Publication sur npm avec CI
