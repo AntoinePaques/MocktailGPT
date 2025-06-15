@@ -6,7 +6,7 @@ import { generatePostFiles } from './generatePostFiles';
 import type { Config } from '../config/types';
 
 export async function generateSDKFromConfig(config: Config) {
-  const name = parse(config.swagger).name;
+  const name = config.projectName ?? parse(config.input).name;
   const spinner = ora(`Generating SDK for ${name}...`).start();
 
   try {

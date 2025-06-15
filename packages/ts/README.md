@@ -10,8 +10,9 @@ Create a `mocktail.config.ts` at the root of your project:
 import { defineMocktailConfig } from '@mocktailgpt/ts';
 
 export default defineMocktailConfig({
-  swagger: './swagger.yaml',
-  output: './src/api/generated',
+  input: './swagger.yaml',
+  output: './src/api',
+  projectName: 'default',
   mock: true,
   postFiles: {
     enabled: true,
@@ -19,6 +20,13 @@ export default defineMocktailConfig({
   },
 });
 ```
+
+Available options (all optional):
+
+- `input` _(default: `'swagger.yaml'`)_ – path to the OpenAPI file
+- `output` _(default: `'src/api'`)_ – destination folder for the generated SDK
+- `projectName` _(default: `'default'`)_ – name used for the Orval entry
+- `mock` _(default: `true`)_ – enable MSW mock generation
 
 Load it in your scripts with:
 
@@ -56,10 +64,10 @@ await generateSDKFromConfig(config);
 ## CLI
 
 Run the generator directly from your terminal. The CLI offers an `init` command
-to scaffold a `mocktail.config.ts` from a Swagger file:
+to scaffold a `mocktail.config.ts` from an OpenAPI file:
 
 ```bash
-mocktail init --swagger ./swagger.yaml
+mocktail init --input ./swagger.yaml
 ```
 
 It also creates a `mocktail.orval.config.ts` in the current directory and runs Orval programmatically.

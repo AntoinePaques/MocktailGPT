@@ -1,5 +1,5 @@
 import { writeFile } from 'fs/promises';
-import { join, resolve, parse } from 'path';
+import { join, resolve } from 'path';
 import { createRequire } from 'module';
 import type { Config } from '../config/types';
 import { formatWithPrettier } from '../utils/formatWithPrettier';
@@ -9,10 +9,10 @@ const require = createRequire(import.meta.url);
 export type OrvalConfigObject = Record<string, unknown>;
 
 export function getOrvalConfigObject(config: Config): OrvalConfigObject {
-  const apiName = parse(config.swagger).name;
+  const apiName = config.projectName ?? '';
   return {
     [apiName]: {
-      input: config.swagger,
+      input: config.input,
       output: {
         target: join(config.output, 'client.ts'),
         schemas: join(config.output, 'model'),

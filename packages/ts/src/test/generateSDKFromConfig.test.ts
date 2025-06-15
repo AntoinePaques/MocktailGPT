@@ -31,10 +31,10 @@ vi.mock('ora', () => {
 describe('generateSDKFromConfig', () => {
   it('runs orval and updates spinner', async () => {
     const config: Config = {
-      swagger: './swagger.yaml',
+      input: './swagger.yaml',
       output: './out',
+      projectName: 'swagger',
       mock: false,
-      customMutators: false,
       postFiles: { enabled: true },
     };
 

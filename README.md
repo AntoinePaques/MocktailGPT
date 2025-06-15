@@ -10,11 +10,24 @@ generate a `mocktail.orval.config.ts`, run [Orval](https://orval.dev) (either vi
 CLI or programmatically with `generateSDKFromConfig`), and create helper files
 (`index.ts`, `msw.ts`, `mockServiceWorker.js` when `postFiles.enabled` is set).
 
-The CLI also offers an `init` command to scaffold a `mocktail.config.ts` from a
-Swagger file:
+The CLI also offers an `init` command to scaffold a `mocktail.config.ts` from an
+OpenAPI file:
 
 ```bash
-mocktail init --swagger ./path/to/swagger.yaml
+mocktail init --input ./path/to/swagger.yaml
+```
+
+The configuration file supports the following options with defaults:
+
+```ts
+import { defineMocktailConfig } from '@mocktailgpt/ts';
+
+export default defineMocktailConfig({
+  input: './swagger.yaml',
+  output: './src/api',
+  projectName: 'default',
+  mock: true,
+});
 ```
 
 ## Development
