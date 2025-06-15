@@ -67,10 +67,13 @@ await generateSDKFromConfig(config);
 ## CLI
 
 Run the generator directly from your terminal. The CLI offers an `init` command
-to scaffold a `mocktail.config.ts` from an OpenAPI file:
+to create a `mocktail.config.ts` interactively. Use `--yes` to skip prompts and
+generate the default configuration:
 
 ```bash
-mocktail init --input ./swagger.yaml
+mocktail init
+# or
+mocktail init --yes
 ```
 
 It also creates a `mocktail.orval.config.ts` in the current directory and runs Orval programmatically.

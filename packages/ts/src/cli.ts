@@ -1,35 +1,19 @@
 #!/usr/bin/env node
 import ora from 'ora';
-import { resolve, relative } from 'path';
-import { existsSync, writeFileSync } from 'fs';
+import { resolve } from 'path';
 import { runCLI } from 'orval';
 import { loadConfig } from './config/loadConfig';
 import { generateOrvalConfig } from './generator/generateOrvalConfig';
 import { generatePostFiles } from './generator/generatePostFiles';
 import { generateMockFiles } from './generator/generateMockFiles';
-import { formatWithPrettier } from './utils/formatWithPrettier';
+import { initConfig } from './cli/init';
 
 async function main() {
   const args = process.argv.slice(2);
   const command = args[0];
 
   if (command === 'init') {
-    const inputIndex = args.indexOf('--input');
-    if (inputIndex === -1) {
-      console.error('Missing --input <path> argument');
-      process.exit(1);
-    }
-    const inputPath = resolve(process.cwd(), args[inputIndex + 1]);
-    const configFile = resolve(process.cwd(), 'mocktail.config.ts');
-    if (existsSync(configFile)) {
-      console.error('mocktail.config.ts already exists');
-      process.exit(1);
-    }
-    const relInput = relative(process.cwd(), inputPath).replace(/\\/g, '/');
-    const content = `import type { MocktailConfig } from '@mocktailgpt/ts';\n\nconst config: MocktailConfig = {\n  input: '${relInput}',\n  output: 'src/api',\n  projectName: 'default',\n  mock: true,\n};\n\nexport default config;\n`;
-    writeFileSync(configFile, content);
-    await formatWithPrettier(configFile);
-    console.log('✅ mocktail.config.ts created');
+    await initConfig(args.slice(1));
     return;
   }
 

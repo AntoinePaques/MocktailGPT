@@ -11,11 +11,14 @@ or programmatically with `generateSDKFromConfig`, and produce MSW mocks. When
 `mock` is enabled, an `msw.ts` file aggregates all handlers and
 `mockServiceWorker.js` is copied to `public/`.
 
-The CLI also offers an `init` command to scaffold a `mocktail.config.ts` from an
-OpenAPI file:
+The CLI offers an `init` command to interactively create a `mocktail.config.ts`.
+Run it without flags to answer prompts, or pass `--yes` to generate a default
+configuration:
 
 ```bash
-mocktail init --input ./path/to/openapi.yaml
+mocktail init
+# or non-interactive
+mocktail init --yes
 ```
 
 The configuration file supports the following options with defaults:
