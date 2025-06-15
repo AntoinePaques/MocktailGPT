@@ -5,10 +5,10 @@ This repository houses multiple packages for the MocktailGPT project.
 ## Packages
 
 [@mocktailgpt/ts](packages/ts): CLI scaffold for generating TypeScript clients
-  with MSW mocks and a `mocktail` command line interface. The package can
-  generate an `orval.config.js`, run [Orval](https://orval.dev), and create
-  helper files (`index.ts`, `msw.ts`, `mockServiceWorker.js`).
-  Use `-c` or `--config` to point to a custom Orval configuration.
+with MSW mocks and a `mocktail` command line interface. The package can
+generate an `orval.config.js`, run [Orval](https://orval.dev), and create
+helper files (`index.ts`, `msw.ts`, `mockServiceWorker.js`).
+Use `-c` or `--config` to point to a custom Orval configuration.
 
 The CLI also offers an `init` command to scaffold a `mocktail.config.ts` from a
 Swagger file:
@@ -21,9 +21,9 @@ mocktail init --swagger ./path/to/swagger.yaml
 
 Standard tooling is configured at the repository root:
 
-- Prettier for code formatting
-- ESLint with TypeScript support
+- Prettier for code formatting (`pnpm format`)
+- ESLint with TypeScript support (`pnpm lint`)
 - Shared TypeScript settings in `tsconfig.base.json`
-- Husky pre-commit hook running lint-staged in packages
+- Husky pre-commit hook running lint-staged
 
 See the package README for configuration details.

@@ -1,11 +1,6 @@
-const ts = require('typescript-eslint')
-
-module.exports = [
-  ...ts.configs.recommended,
-  {
-    ignores: ['dist/**/*', 'node_modules/**/*'],
-    rules: {
-      'no-console': 'off'
-    }
-  }
-]
+module.exports = {
+  root: true,
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint'],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
+};

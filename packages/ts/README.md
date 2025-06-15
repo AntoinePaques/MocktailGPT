@@ -7,21 +7,21 @@ CLI tool scaffold for generating TypeScript clients from OpenAPI with MSW mocks.
 Create a `mocktail.config.ts` at the root of your project:
 
 ```ts
-import { defineMocktailConfig } from '@mocktailgpt/ts'
+import { defineMocktailConfig } from '@mocktailgpt/ts';
 
 export default defineMocktailConfig({
   swagger: './swagger.yaml',
   output: './src/api/generated',
   mock: true,
-})
+});
 ```
 
 Load it in your scripts with:
 
 ```ts
-import { loadConfig } from '@mocktailgpt/ts'
+import { loadConfig } from '@mocktailgpt/ts';
 
-const config = await loadConfig('./mocktail.config.ts')
+const config = await loadConfig('./mocktail.config.ts');
 ```
 
 ### Generate an Orval configuration
@@ -29,9 +29,9 @@ const config = await loadConfig('./mocktail.config.ts')
 With the validated config you can create an `orval.config.js` for programmatic usage:
 
 ```ts
-import { generateOrvalConfig } from '@mocktailgpt/ts'
+import { generateOrvalConfig } from '@mocktailgpt/ts';
 
-const orvalConfigPath = generateOrvalConfig(config)
+const orvalConfigPath = generateOrvalConfig(config);
 // then use it with orval
 // await generate(orvalConfigPath)
 ```
@@ -67,11 +67,8 @@ Available scripts:
 pnpm build         # compile TypeScript
 pnpm clean         # remove build output and generated config
 pnpm dev           # clean then build
-pnpm format        # format source files
-pnpm format:check  # check formatting
-pnpm lint          # run ESLint
-pnpm lint:fix      # fix lint issues
 ```
 
-Installing dependencies will run `pnpm prepare` to set up Husky.
+Formatting and linting are handled from the repository root with `pnpm format` and `pnpm lint`.
+Installing dependencies will run `pnpm prepare` to set up Husky at the root.
 The pre-commit hook formats and lints staged files via `lint-staged`.
