@@ -52,7 +52,7 @@ async function main() {
     const orvalConfigPath =
       configArgIndex !== -1
         ? resolve(process.cwd(), args[configArgIndex + 1])
-        : resolve(process.cwd(), 'orval.config.js');
+        : resolve(process.cwd(), '.mocktail/orval.temp.config.ts');
 
     try {
       await runCLI(['--config', orvalConfigPath]);

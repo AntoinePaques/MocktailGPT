@@ -6,7 +6,7 @@ This repository houses multiple packages for the MocktailGPT project.
 
 [@mocktailgpt/ts](packages/ts): CLI scaffold for generating TypeScript clients
 with MSW mocks and a `mocktail` command line interface. The package can
-generate an `orval.config.js`, run [Orval](https://orval.dev) (either via the
+generate a `.mocktail/orval.temp.config.ts`, run [Orval](https://orval.dev) (either via the
 CLI or programmatically with `generateSDKFromConfig`), and create helper files
 (`index.ts`, `msw.ts`, `mockServiceWorker.js`).
 Use `-c` or `--config` to point to a custom Orval configuration.

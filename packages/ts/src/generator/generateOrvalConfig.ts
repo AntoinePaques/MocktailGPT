@@ -1,6 +1,5 @@
-import { writeFileSync } from 'fs';
-import { join, resolve, dirname, parse } from 'path';
-import { fileURLToPath } from 'url';
+import { writeFileSync, mkdirSync } from 'fs';
+import { join, resolve, parse } from 'path';
 import { createRequire } from 'module';
 import type { Config } from '../config/types';
 
@@ -27,9 +26,10 @@ export function getOrvalConfigObject(config: Config) {
 
 export function generateOrvalConfig(config: Config): string {
   const orvalConfig = getOrvalConfigObject(config);
-  const __dirname = dirname(fileURLToPath(import.meta.url));
-  const filePath = resolve(__dirname, '../../orval.config.js');
-  const content = `module.exports = ${JSON.stringify(orvalConfig, null, 2)}\n`;
+  const dir = resolve(process.cwd(), '.mocktail');
+  mkdirSync(dir, { recursive: true });
+  const filePath = join(dir, 'orval.temp.config.ts');
+  const content = `export default ${JSON.stringify(orvalConfig, null, 2)}\n`;
   writeFileSync(filePath, content);
   return filePath;
 }
