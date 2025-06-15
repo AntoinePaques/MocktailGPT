@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import ora from 'ora'
 import { resolve } from 'path'
+import { runCLI } from 'orval'
 import { loadConfig } from './config/loadConfig'
 import { generateOrvalConfig } from './generator/generateOrvalConfig'
 
@@ -23,13 +24,20 @@ async function main() {
     spinner.succeed('Config loaded')
 
     generateOrvalConfig(config)
-    const orval = await import('orval')
-    await orval.runCLI(resolve(process.cwd(), 'orval.config.js')).catch((err: unknown) => {
+
+    const configArgIndex = args.findIndex((arg) => arg === '--config' || arg === '-c')
+    const orvalConfigPath =
+      configArgIndex !== -1
+        ? resolve(process.cwd(), args[configArgIndex + 1])
+        : resolve(process.cwd(), 'orval.config.js')
+
+    try {
+      await runCLI(['--config', orvalConfigPath])
+      console.log('✅ Orval generation complete')
+    } catch (err) {
       console.error('❌ Orval generation failed:', err)
       process.exit(1)
-    })
-
-    console.log('🎉 Orval generation complete')
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     if (message.startsWith('Invalid config')) {
