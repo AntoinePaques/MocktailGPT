@@ -5,4 +5,10 @@ export const schema = z.object({
   output: z.string(),
   mock: z.boolean().optional().default(false),
   customMutators: z.boolean().optional().default(false),
+  postFiles: z
+    .object({
+      enabled: z.boolean(),
+      output: z.string().optional(),
+    })
+    .optional(),
 });

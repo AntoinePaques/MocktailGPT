@@ -15,7 +15,12 @@ export async function generateSDKFromConfig(config: Config) {
     const runOrval = await getOrvalRunner();
     await runOrval(orvalConfigPath);
 
-    await generatePostFiles(resolve(process.cwd(), config.output));
+    if (config.postFiles?.enabled) {
+      await generatePostFiles(
+        resolve(process.cwd(), config.output),
+        resolve(process.cwd(), config.output, config.postFiles.output ?? '.'),
+      );
+    }
     spinner.succeed(`✅ SDK generated for ${name}`);
   } catch (error) {
     spinner.fail('SDK generation failed');

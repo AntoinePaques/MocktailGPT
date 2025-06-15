@@ -13,6 +13,10 @@ export default defineMocktailConfig({
   swagger: './swagger.yaml',
   output: './src/api/generated',
   mock: true,
+  postFiles: {
+    enabled: true,
+    // output: '.', // optional path relative to `output`
+  },
 });
 ```
 
@@ -59,11 +63,13 @@ mocktail init --swagger ./swagger.yaml
 ```
 
 It also creates a `mocktail.orval.config.ts` in the current directory and runs Orval programmatically.
-After Orval completes it also generates helper files in the output directory:
+If `postFiles.enabled` is true, helper files are generated after Orval:
 
-- `index.ts` that re-exports all generated modules
-- `msw.ts` automatically aggregates handlers from every `*.msw.ts` file
-- `mockServiceWorker.js` starting an MSW worker
+- `index.ts` re-exporting the client, models and mocks
+- `msw.ts` exposing a ready-to-use MSW `worker`
+- `mockServiceWorker.js` copied from the `msw` package
+
+Future versions may add extra helpers or type definitions.
 
 ## Development
 

@@ -54,7 +54,12 @@ async function main() {
     await runCLI(orvalConfigPath);
     spinner.succeed('✔ Orval client generated');
 
-    await generatePostFiles(resolve(process.cwd(), config.output));
+    if (config.postFiles?.enabled) {
+      await generatePostFiles(
+        resolve(process.cwd(), config.output),
+        resolve(process.cwd(), config.output, config.postFiles.output ?? '.'),
+      );
+    }
   } catch (error) {
     spinner.fail('Generation failed');
     const message = error instanceof Error ? error.message : String(error);
