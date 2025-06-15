@@ -1,3 +1,3 @@
 declare module 'orval' {
-  export function runCLI(args: string[]): Promise<void>;
+  export function runCLI(configPath: string): Promise<void>;
 }

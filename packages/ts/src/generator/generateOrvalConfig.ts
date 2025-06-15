@@ -1,11 +1,14 @@
-import { writeFileSync, mkdirSync } from 'fs';
+import { writeFile } from 'fs/promises';
 import { join, resolve, parse } from 'path';
 import { createRequire } from 'module';
 import type { Config } from '../config/types';
+import { formatWithPrettier } from '../utils/formatWithPrettier';
 
 const require = createRequire(import.meta.url);
 
-export function getOrvalConfigObject(config: Config) {
+export type OrvalConfigObject = Record<string, unknown>;
+
+export function getOrvalConfigObject(config: Config): OrvalConfigObject {
   const apiName = parse(config.swagger).name;
   return {
     [apiName]: {
@@ -24,12 +27,15 @@ export function getOrvalConfigObject(config: Config) {
   };
 }
 
-export function generateOrvalConfig(config: Config): string {
-  const orvalConfig = getOrvalConfigObject(config);
-  const dir = resolve(process.cwd(), '.mocktail');
-  mkdirSync(dir, { recursive: true });
-  const filePath = join(dir, 'orval.temp.config.ts');
-  const content = `export default ${JSON.stringify(orvalConfig, null, 2)}\n`;
-  writeFileSync(filePath, content);
+export async function writeOrvalConfig(config: OrvalConfigObject): Promise<string> {
+  const filePath = resolve(process.cwd(), 'mocktail.orval.config.ts');
+  const content = `export default ${JSON.stringify(config, null, 2)}\n`;
+  await writeFile(filePath, content);
+  await formatWithPrettier(filePath);
   return filePath;
+}
+
+export async function generateOrvalConfig(config: Config): Promise<string> {
+  const orvalConfig = getOrvalConfigObject(config);
+  return writeOrvalConfig(orvalConfig);
 }

@@ -29,13 +29,13 @@ configuration fails validation.
 
 ### Generate an Orval configuration
 
-With the validated config you can create a `.mocktail/orval.temp.config.ts` for programmatic usage:
+With the validated config you can create a `mocktail.orval.config.ts` for programmatic usage:
 
 ```ts
 import { generateOrvalConfig } from '@mocktailgpt/ts';
 
-const orvalConfigPath = generateOrvalConfig(config);
-// orvalConfigPath points to .mocktail/orval.temp.config.ts
+const orvalConfigPath = await generateOrvalConfig(config);
+// orvalConfigPath points to mocktail.orval.config.ts
 // await generate(orvalConfigPath)
 ```
 
@@ -58,8 +58,7 @@ to scaffold a `mocktail.config.ts` from a Swagger file:
 mocktail init --swagger ./swagger.yaml
 ```
 
-It also creates an
-`.mocktail/orval.temp.config.ts` in the current directory and runs Orval programmatically.
+It also creates a `mocktail.orval.config.ts` in the current directory and runs Orval programmatically.
 After Orval completes it also generates helper files in the output directory:
 
 - `index.ts` that re-exports all generated modules

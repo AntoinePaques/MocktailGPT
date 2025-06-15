@@ -10,7 +10,7 @@ export async function generateSDKFromConfig(config: Config) {
   const spinner = ora(`Generating SDK for ${name}...`).start();
 
   try {
-    const orvalConfigPath = generateOrvalConfig(config);
+    const orvalConfigPath = await generateOrvalConfig(config);
 
     const runOrval = await getOrvalRunner();
     await runOrval(orvalConfigPath);
@@ -27,7 +27,7 @@ async function getOrvalRunner() {
   try {
     const mod = await import('orval');
     return async (configPath: string) => {
-      await mod.runCLI(['--config', configPath]);
+      await mod.runCLI(configPath);
     };
   } catch {
     return async (configPath: string) => {

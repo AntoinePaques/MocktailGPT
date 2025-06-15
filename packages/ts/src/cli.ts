@@ -46,23 +46,18 @@ async function main() {
     const config = await loadConfig(configPath);
     spinner.succeed('Config loaded');
 
-    const orvalConfigPath = generateOrvalConfig(config);
+    spinner.start('Writing Orval config...');
+    const orvalConfigPath = await generateOrvalConfig(config);
+    spinner.succeed('✔ Orval config written');
 
-    try {
-      await runCLI(['--config', orvalConfigPath]);
-      console.log('✅ Orval generation complete');
-      await generatePostFiles(resolve(process.cwd(), config.output));
-    } catch (err) {
-      console.error('❌ Orval generation failed:', err);
-      process.exit(1);
-    }
+    spinner.start('Generating Orval client...');
+    await runCLI(orvalConfigPath);
+    spinner.succeed('✔ Orval client generated');
+
+    await generatePostFiles(resolve(process.cwd(), config.output));
   } catch (error) {
+    spinner.fail('Generation failed');
     const message = error instanceof Error ? error.message : String(error);
-    if (message.startsWith('Invalid config')) {
-      spinner.fail('❌ Invalid config');
-    } else {
-      spinner.fail('Error loading config');
-    }
     console.error(message);
     process.exit(1);
   }
