@@ -1,0 +1,8 @@
+node_modules/
+.pnpm/
+.env
+pnpm-debug.log*
+# ignore built output
+packages/*/dist/
+packages/*/node_modules/
+*.tsbuildinfo
