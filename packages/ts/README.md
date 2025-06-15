@@ -13,6 +13,7 @@ const config: MocktailConfig = {
   input: 'swagger.yaml',
   output: 'src/api',
   projectName: 'default',
+  clientName: 'client',
   mock: true,
   postFiles: {
     enabled: true,
@@ -28,6 +29,7 @@ Available options (all optional):
 - `input` _(default: `'swagger.yaml'`)_ – path to the OpenAPI file
 - `output` _(default: `'src/api'`)_ – destination folder for the generated SDK
 - `projectName` _(default: `'default'`)_ – name used for the Orval entry
+- `clientName` _(default: `'client'`)_ – name of the generated client file
 - `mock` _(default: `true`)_ – enable MSW mock generation
 - `postFiles` – generate helper files (`index.ts`)
 
@@ -77,12 +79,10 @@ mocktail init --yes
 ```
 
 It also creates a `mocktail.orval.config.ts` in the current directory and runs Orval programmatically.
-If `postFiles.enabled` is true, helper files are generated after Orval:
-
-- `index.ts` re-exporting the client, models and mocks
-
-When `mock` is enabled, all `*.msw.ts` files are aggregated into `msw.ts` and
-`mockServiceWorker.js` is copied into the `public/` directory (if missing).
+If `postFiles.enabled` is true, helper files are generated after Orval.
+When `mock` is enabled, `msw.ts`, `index.ts` and `mockServiceWorker.js` are
+created inside the configured output directory. Existing files are left
+untouched.
 
 Future versions may add extra helpers or type definitions.
 
