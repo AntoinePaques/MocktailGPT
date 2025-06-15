@@ -1,6 +1,10 @@
 # @mocktailgpt/ts
 
-CLI tool scaffold for generating TypeScript clients from OpenAPI with MSW mocks.
+[![npm version](https://img.shields.io/npm/v/@mocktailgpt/ts?color=green&label=npm)](https://www.npmjs.com/package/@mocktailgpt/ts)
+[![pnpm workspace](https://img.shields.io/badge/monorepo-pnpm-blueviolet)](https://pnpm.io)
+[![ESM](https://img.shields.io/badge/esm-compatible-blue)](https://nodejs.org/api/esm.html)
+
+> CLI tool scaffold for generating TypeScript clients from OpenAPI with MSW mocks.
 
 ## Configuration
 
@@ -17,8 +21,8 @@ const config: MocktailConfig = {
   mock: true,
   postFiles: {
     enabled: true,
-    // output: '.', // optional path relative to `output`
-  },
+};
+export default config;
 };
 
 export default config;
@@ -26,12 +30,22 @@ export default config;
 
 Available options (all optional):
 
-- `input` _(default: `'swagger.yaml'`)_ – path to the OpenAPI file
-- `output` _(default: `'src/api'`)_ – destination folder for the generated SDK
-- `projectName` _(default: `'default'`)_ – name used for the Orval entry
-- `clientName` _(default: `'client'`)_ – name of the generated client file
-- `mock` _(default: `true`)_ – enable MSW mock generation
-- `postFiles` – generate helper files (`index.ts`)
+### Fix des extensions d'import
+
+Après compilation, les fichiers générés en ESM ont besoin d'extensions `.js` explicites. Exécutez le script suivant pour patcher automatiquement tous les imports relatifs :
+
+```bash
+node fix-import-extensions.mjs
+```
+
+La commande fonctionne aussi bien depuis la racine du dépôt que depuis le dossier `packages/ts`.
+
+- `input` (default: `'swagger.yaml'`) – path to the OpenAPI file
+- `output` (default: `'src/api'`) – destination folder for the generated SDK
+- `projectName` (default: `'default'`) – name used for the Orval entry
+- `clientName` (default: `'client'`) – name of the generated client file
+- `mock` (default: `true`) – enable MSW mock generation
+- `postFiles` – generate helper files (`index.ts`, `msw.ts`, `mockServiceWorker.js`)
 
 Load it in your scripts with:
 
@@ -41,24 +55,18 @@ import { loadConfig } from '@mocktailgpt/ts';
 const config = await loadConfig('./mocktail.config.ts');
 ```
 
-`loadConfig` returns defaults when the file is missing and throws if the
-configuration fails validation.
+`loadConfig` returns defaults when the file is missing and throws if the configuration fails validation.
 
-### Generate an Orval configuration
-
-With the validated config you can create a `mocktail.orval.config.ts` for programmatic usage:
+## Generate an Orval configuration
 
 ```ts
 import { generateOrvalConfig } from '@mocktailgpt/ts';
 
 const orvalConfigPath = await generateOrvalConfig(config);
 // orvalConfigPath points to mocktail.orval.config.ts
-// await generate(orvalConfigPath)
 ```
 
-### Generate the SDK programmatically
-
-If you prefer to run Orval directly, use `generateSDKFromConfig`:
+## Generate the SDK programmatically
 
 ```ts
 import { generateSDKFromConfig } from '@mocktailgpt/ts';
@@ -68,27 +76,19 @@ await generateSDKFromConfig(config);
 
 ## CLI
 
-Run the generator directly from your terminal. The CLI offers an `init` command
-to create a `mocktail.config.ts` interactively. Use `--yes` to skip prompts and
-generate the default configuration:
-
 ```bash
 mocktail init
-# or
 mocktail init --yes
+mocktail generate
 ```
 
-It also creates a `mocktail.orval.config.ts` in the current directory and runs Orval programmatically.
-If `postFiles.enabled` is true, helper files are generated after Orval.
-When `mock` is enabled, `msw.ts`, `index.ts` and `mockServiceWorker.js` are
-created inside the configured output directory. Existing files are left
-untouched.
+When `mock` is enabled, `msw.ts`, `index.ts`, and `mockServiceWorker.js` are created inside the configured output directory. Existing files are left untouched.
 
-Future versions may add extra helpers or type definitions.
+## Example
+
+See `example/vanScrapper/` for a working React + MSW + Swagger integration.
 
 ## Development
-
-Available scripts:
 
 ```bash
 pnpm build         # compile TypeScript
@@ -97,6 +97,15 @@ pnpm dev           # clean then build
 pnpm generate      # run the CLI to generate the SDK
 ```
 
-Formatting and linting are handled from the repository root with `pnpm format` and `pnpm lint`.
-Installing dependencies will run `pnpm prepare` to set up Husky at the root.
-The pre-commit hook formats and lints staged files via `lint-staged`.
+Formatting and linting are handled with:
+
+```bash
+pnpm format
+pnpm lint
+```
+
+Installing dependencies will run `pnpm prepare` to set up Husky. The pre-commit hook formats and lints staged files via `lint-staged`.
+
+## License
+
+MIT © Antoine Paques

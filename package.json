@@ -5,11 +5,12 @@
   "main": "index.mjs",
   "type": "module",
   "scripts": {
-    "test": "vitest run",
     "prepare": "husky install",
-    "lint": "eslint . --ext .ts",
+    "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist .mocktail",
+    "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write .",
-    "clean": "rimraf dist"
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",

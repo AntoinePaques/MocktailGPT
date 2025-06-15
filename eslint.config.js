@@ -5,13 +5,14 @@ import prettier from 'eslint-plugin-prettier';
 /** @type {import("eslint").Linter.FlatConfig[]} */
 export default [
   {
-    files: ['**/*.ts'],
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: parserTs,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
         project: ['./tsconfig.base.json'],
+        tsconfigRootDir: process.cwd(), // important en monorepo
       },
     },
     plugins: {
@@ -21,6 +22,9 @@ export default [
     rules: {
       ...pluginTs.configs.recommended.rules,
       'prettier/prettier': 'error',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
   },
 ];

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 import ora from 'ora';
-import { resolve } from 'path';
 import { runCLI } from 'orval';
-import { loadConfig } from './config/loadConfig';
-import { generateOrvalConfig } from './generator/generateOrvalConfig';
-import { generatePostFiles } from './generator/generatePostFiles';
-import { generateMockFiles } from './generator/generateMockFiles';
-import { initConfig } from './cli/init';
+import { resolve } from 'path';
+import { initConfig } from './cli/init.js';
+import { loadConfig } from './config/loadConfig.js';
+import { generateMockFiles } from './generator/generateMockFiles.js';
+import { generateOrvalConfig } from './generator/generateOrvalConfig.js';
+import { generatePostFiles } from './generator/generatePostFiles.js';
 
 async function main() {
   const args = process.argv.slice(2);

@@ -1,12 +1,7 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "strict": true,
-    "outDir": "dist",
-    "declaration": true,
-    "moduleResolution": "Node",
-    "skipLibCheck": true
+  "extends": "../../tsconfig.base.json",
+    "types": ["node", "vitest"]
+    "outDir": "dist"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "test/**/*.ts"]
 }

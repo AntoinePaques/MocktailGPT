@@ -2,7 +2,16 @@ import { existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import prompts from 'prompts';
 import type { MocktailConfig } from '../config/types';
-import { formatWithPrettier } from '../utils/formatWithPrettier';
+    clientName: 'client',
+      {
+        type: 'text',
+        name: 'clientName',
+        message: 'Client name:',
+        initial: defaults.clientName,
+      },
+      clientName: answers.clientName,
+    `  clientName: '${config.clientName}',\n` +
+import { formatWithPrettier } from '../utils/formatWithPrettier.js';
 
 export async function initConfig(args: string[] = []): Promise<void> {
   const yes = args.includes('--yes');
@@ -13,9 +22,10 @@ export async function initConfig(args: string[] = []): Promise<void> {
   }
 
   const defaults: MocktailConfig = {
-    input: './swagger.yaml',
-    output: './src/api',
+    input: 'swagger.yaml',
+    output: 'src/api',
     projectName: 'default',
+    clientName: 'client',
     mock: true,
   };
 
@@ -51,12 +61,19 @@ export async function initConfig(args: string[] = []): Promise<void> {
         active: 'yes',
         inactive: 'no',
       },
+      {
+        type: 'text',
+        name: 'clientName',
+        message: 'Client name (default: client)',
+        initial: 'client',
+      },
     ]);
 
     config = {
       input: answers.input,
       output: answers.output,
       projectName: answers.projectName,
+      clientName: answers.clientName ?? 'client',
       mock: answers.mock,
     };
   }
