@@ -48,3 +48,9 @@ Standard tooling is configured at the repository root:
 - Husky pre-commit hook running lint-staged
 
 See the package README for configuration details.
+
+## Examples
+
+A minimal React application demonstrating the Mocktail CLI is located in [example/vanScrapper](example/vanScrapper).
+Run `pnpm install` and `pnpm dev` inside this directory to start the app with MSW mocks enabled.
+Use `pnpm generate` to regenerate the API client from the provided OpenAPI spec.

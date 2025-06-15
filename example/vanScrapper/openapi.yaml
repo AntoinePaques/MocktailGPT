@@ -1,0 +1,27 @@
+openapi: 3.0.1
+info:
+  title: Van Scrapper API
+  version: 1.0.0
+paths:
+  /vans:
+    get:
+      operationId: getAllVanInfo
+      summary: Get all van information
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Van'
+components:
+  schemas:
+    Van:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
