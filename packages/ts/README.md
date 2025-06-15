@@ -38,10 +38,12 @@ const orvalConfigPath = generateOrvalConfig(config)
 
 ## CLI
 
-Run the generator directly from your terminal:
+Run the generator directly from your terminal. The CLI creates an
+`orval.config.js` in the current directory and runs Orval programmatically.
+You can pass `-c` or `--config` to use a custom Orval configuration path:
 
 ```bash
-npx mocktail generate --config ./mocktail.config.ts
+npx mocktail generate --config ./mocktail.config.ts -c ./orval.config.js
 ```
 
 ## Development
