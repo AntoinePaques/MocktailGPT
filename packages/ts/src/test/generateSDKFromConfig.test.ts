@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
 import { resolve } from 'path';
+import type { Mock } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { Config } from '../config/types';
 import { generateSDKFromConfig } from '../generator/generateSDKFromConfig';
-
 declare global {
   var oraStart: ReturnType<typeof vi.fn> | undefined;
   var oraSucceed: ReturnType<typeof vi.fn> | undefined;
@@ -27,7 +27,7 @@ vi.mock('ora', () => {
   const succeed = vi.fn();
   const fail = vi.fn();
   const start = vi.fn(() => ({ succeed, fail }));
-  globalThis.oraStart = start;
+  globalThis.oraStart = start as unknown as Mock<any[], unknown>;
   globalThis.oraSucceed = succeed;
   return { default: () => ({ start, succeed, fail }) };
 });
@@ -35,11 +35,14 @@ vi.mock('ora', () => {
 describe('generateSDKFromConfig', () => {
   it('runs orval and updates spinner', async () => {
     const config: Config = {
-      input: './swagger.yaml',
-      output: './out',
-      projectName: 'swagger',
+      input: './mocktail.yaml',
+      output: './generated',
+      projectName: 'test-project',
+      clientName: 'client',
       mock: false,
-      postFiles: { enabled: true },
+      postFiles: {
+        enabled: true,
+      },
     };
 
     const { generatePostFiles } = await import('../generator/generatePostFiles');
@@ -60,9 +63,10 @@ describe('generateSDKFromConfig', () => {
 
   it('generates mocks when enabled', async () => {
     const config: Config = {
-      input: './swagger.yaml',
-      output: './out',
-      projectName: 'swagger',
+      input: './mocktail.yaml',
+      output: './generated',
+      projectName: 'test-project',
+      clientName: 'client',
       mock: true,
     };
 
