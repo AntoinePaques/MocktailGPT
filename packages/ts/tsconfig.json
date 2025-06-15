@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
+    "types": ["node", "vitest"]
     "outDir": "dist"
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "test/**/*.ts"]

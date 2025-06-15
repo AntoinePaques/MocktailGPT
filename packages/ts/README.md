@@ -21,8 +21,8 @@ const config: MocktailConfig = {
   mock: true,
   postFiles: {
     enabled: true,
-    // output: '.', // optional path relative to `output`
-  },
+};
+export default config;
 };
 
 export default config;

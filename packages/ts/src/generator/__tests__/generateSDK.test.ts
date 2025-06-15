@@ -26,6 +26,7 @@ describe('generateSDKFromConfig integration', () => {
       input: join(tmp, 'swagger.yaml'),
       output: join(tmp, 'out'),
       projectName: 'api',
+      clientName: 'client',
       mock: false,
     };
 

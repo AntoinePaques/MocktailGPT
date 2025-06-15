@@ -1,4 +1,13 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  vi,
+  type Mock,
+  type SpyInstance,
+} from 'vitest';
 import { mkdtemp, rm, readFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
@@ -9,13 +18,13 @@ vi.mock('prompts', () => ({ default: vi.fn() }));
 
 describe('initConfig', () => {
   let tmp: string;
-  let cwdSpy: vi.SpyInstance;
-  let prompts: vi.Mock;
+  let cwdSpy: SpyInstance;
+  let prompts: Mock;
 
   beforeEach(async () => {
     tmp = await mkdtemp(join(tmpdir(), 'mocktail-'));
     cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(tmp);
-    prompts = (await import('prompts')).default as unknown as vi.Mock;
+    prompts = (await import('prompts')).default as unknown as Mock;
   });
 
   afterEach(async () => {

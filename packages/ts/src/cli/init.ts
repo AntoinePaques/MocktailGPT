@@ -2,6 +2,15 @@ import { existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import prompts from 'prompts';
 import type { MocktailConfig } from '../config/types';
+    clientName: 'client',
+      {
+        type: 'text',
+        name: 'clientName',
+        message: 'Client name:',
+        initial: defaults.clientName,
+      },
+      clientName: answers.clientName,
+    `  clientName: '${config.clientName}',\n` +
 import { formatWithPrettier } from '../utils/formatWithPrettier.js';
 
 export async function initConfig(args: string[] = []): Promise<void> {

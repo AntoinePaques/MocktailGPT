@@ -2,11 +2,12 @@
   "name": "@mocktailgpt/ts",
   "version": "0.1.0",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
+    "@types/prompts": "^2.4.9",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+    "ora": "^8.2.0",
+    "prompts": "^2.4.2",
+    "zod": "^3.25.64"
       "types": "./dist/index.d.ts"
     }
   },

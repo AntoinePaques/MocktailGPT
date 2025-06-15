@@ -1,5 +1,7 @@
-import { resolve } from 'path';
-import type { Mock } from 'vitest';
+import { describe, it, expect, vi, type Mock } from 'vitest';
+  globalThis.oraStart = start as unknown as Mock<unknown[], unknown>;
+      clientName: 'client',
+      clientName: 'client',
 import { describe, expect, it, vi } from 'vitest';
 import type { Config } from '../config/types';
 import { generateSDKFromConfig } from '../generator/generateSDKFromConfig';

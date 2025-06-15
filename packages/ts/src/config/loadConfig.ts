@@ -1,7 +1,10 @@
 import { resolve } from 'path';
 import { existsSync } from 'fs';
 import { ZodError } from 'zod';
-import { tsImport } from 'tsx/esm/api';
+import { tsImport as baseImport } from 'tsx';
+import { tsImport as fallbackImport } from 'tsx/esm/api';
+
+const tsImport = baseImport ?? fallbackImport;
 import { MocktailConfigSchema } from './schema';
 import type { Config } from './types';
 
@@ -12,7 +15,9 @@ export async function loadConfig(configPath = './mocktail.config.ts'): Promise<C
     return MocktailConfigSchema.parse({});
   }
   try {
-    const mod = await tsImport(resolvedPath, import.meta.url);
+    const mod = (await tsImport(resolvedPath, import.meta.url)) as {
+      default?: unknown;
+    };
     const rawConfig = mod.default ?? mod;
     return MocktailConfigSchema.parse(rawConfig);
   } catch (error) {
