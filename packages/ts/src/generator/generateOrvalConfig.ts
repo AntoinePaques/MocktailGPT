@@ -10,6 +10,12 @@ export type OrvalConfigObject = Record<string, unknown>;
 
 export function getOrvalConfigObject(config: Config): OrvalConfigObject {
   const apiName = config.projectName ?? '';
+  let mutatorPath: string | undefined;
+  try {
+    mutatorPath = require.resolve('../logic/mutators/globalMutatorFactory.ts');
+  } catch {
+    console.warn('⚠️ No globalMutatorFactory found, skipping custom mutator.');
+  }
   return {
     [apiName]: {
       input: config.input,
@@ -19,10 +25,7 @@ export function getOrvalConfigObject(config: Config): OrvalConfigObject {
         client: 'fetch',
         mock: config.mock,
       },
-      mutator: {
-        path: require.resolve('../logic/mutators/globalMutatorFactory.ts'),
-        name: 'globalMutator',
-      },
+      ...(mutatorPath ? { mutator: { path: mutatorPath, name: 'globalMutator' } } : {}),
     },
   };
 }

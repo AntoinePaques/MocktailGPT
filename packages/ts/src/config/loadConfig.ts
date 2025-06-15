@@ -19,7 +19,11 @@ export async function loadConfig(configPath = './mocktail.config.ts'): Promise<C
       default?: unknown;
     };
     const rawConfig = mod.default ?? mod;
-    return MocktailConfigSchema.parse(rawConfig);
+    const parsed = MocktailConfigSchema.safeParse(rawConfig);
+    if (!parsed.success) {
+      throw new Error(`Invalid config: ${JSON.stringify(parsed.error.format(), null, 2)}`);
+    }
+    return parsed.data;
   } catch (error) {
     if (error instanceof ZodError) {
       throw new Error(`Invalid config: ${JSON.stringify(error.format(), null, 2)}`);

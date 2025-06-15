@@ -2,6 +2,7 @@
 import ora from 'ora';
 import { runCLI } from 'orval';
 import { resolve } from 'path';
+import { existsSync, readdirSync } from 'fs';
 import { initConfig } from './cli/init.js';
 import { loadConfig } from './config/loadConfig.js';
 import { generateMockFiles } from './generator/generateMockFiles.js';
@@ -11,6 +12,10 @@ import { generatePostFiles } from './generator/generatePostFiles.js';
 async function main() {
   const args = process.argv.slice(2);
   const command = args[0];
+
+  if (existsSync('.env')) {
+    await import('dotenv').then((m) => m.config());
+  }
 
   if (command === 'init') {
     await initConfig(args.slice(1));
@@ -30,6 +35,12 @@ async function main() {
   try {
     const config = await loadConfig(configPath);
     spinner.succeed('Config loaded');
+    if (!existsSync(config.input)) {
+      console.error(`❌ Swagger file not found: ${config.input}`);
+      process.exit(1);
+    }
+    console.log('📄 Swagger input:', config.input);
+    console.log('📂 Output dir:', config.output || 'generated');
 
     spinner.start('Writing Orval config...');
     const orvalConfigPath = await generateOrvalConfig(config);
@@ -51,6 +62,14 @@ async function main() {
         resolve(process.cwd(), 'public'),
       );
     }
+
+    try {
+      const files = readdirSync(resolve(process.cwd(), config.output));
+      if (files.length) {
+        console.log('Generated files:');
+        for (const f of files) console.log(' -', f);
+      }
+    } catch {}
   } catch (error) {
     spinner.fail('Generation failed');
     const message = error instanceof Error ? error.message : String(error);
