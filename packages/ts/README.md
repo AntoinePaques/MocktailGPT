@@ -30,6 +30,16 @@ export default config;
 
 Available options (all optional):
 
+### Fix des extensions d'import
+
+Après compilation, les fichiers générés en ESM ont besoin d'extensions `.js` explicites. Exécutez le script suivant pour patcher automatiquement tous les imports relatifs :
+
+```bash
+node fix-import-extensions.mjs
+```
+
+La commande fonctionne aussi bien depuis la racine du dépôt que depuis le dossier `packages/ts`.
+
 - `input` (default: `'swagger.yaml'`) – path to the OpenAPI file
 - `output` (default: `'src/api'`) – destination folder for the generated SDK
 - `projectName` (default: `'default'`) – name used for the Orval entry
