@@ -6,6 +6,7 @@ import { runCLI } from 'orval';
 import { loadConfig } from './config/loadConfig';
 import { generateOrvalConfig } from './generator/generateOrvalConfig';
 import { generatePostFiles } from './generator/generatePostFiles';
+import { generateMockFiles } from './generator/generateMockFiles';
 import { formatWithPrettier } from './utils/formatWithPrettier';
 
 async function main() {
@@ -58,6 +59,12 @@ async function main() {
       await generatePostFiles(
         resolve(process.cwd(), config.output),
         resolve(process.cwd(), config.output, config.postFiles.output ?? '.'),
+      );
+    }
+    if (config.mock) {
+      await generateMockFiles(
+        resolve(process.cwd(), config.output),
+        resolve(process.cwd(), 'public'),
       );
     }
   } catch (error) {

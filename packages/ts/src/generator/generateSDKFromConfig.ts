@@ -3,6 +3,7 @@ import { spawn } from 'child_process';
 import ora from 'ora';
 import { generateOrvalConfig } from './generateOrvalConfig';
 import { generatePostFiles } from './generatePostFiles';
+import { generateMockFiles } from './generateMockFiles';
 import type { Config } from '../config/types';
 
 export async function generateSDKFromConfig(config: Config) {
@@ -19,6 +20,12 @@ export async function generateSDKFromConfig(config: Config) {
       await generatePostFiles(
         resolve(process.cwd(), config.output),
         resolve(process.cwd(), config.output, config.postFiles.output ?? '.'),
+      );
+    }
+    if (config.mock) {
+      await generateMockFiles(
+        resolve(process.cwd(), config.output),
+        resolve(process.cwd(), 'public'),
       );
     }
     spinner.succeed(`✅ SDK generated for ${name}`);

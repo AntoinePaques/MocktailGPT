@@ -29,7 +29,7 @@ Available options (all optional):
 - `output` _(default: `'src/api'`)_ – destination folder for the generated SDK
 - `projectName` _(default: `'default'`)_ – name used for the Orval entry
 - `mock` _(default: `true`)_ – enable MSW mock generation
-- `postFiles` – generate helper files (`index.ts`, `msw.ts`, `mockServiceWorker.js`)
+- `postFiles` – generate helper files (`index.ts`)
 
 Load it in your scripts with:
 
@@ -77,8 +77,9 @@ It also creates a `mocktail.orval.config.ts` in the current directory and runs O
 If `postFiles.enabled` is true, helper files are generated after Orval:
 
 - `index.ts` re-exporting the client, models and mocks
-- `msw.ts` exposing a ready-to-use MSW `worker`
-- `mockServiceWorker.js` copied from the `msw` package
+
+When `mock` is enabled, all `*.msw.ts` files are aggregated into `msw.ts` and
+`mockServiceWorker.js` is copied into the `public/` directory (if missing).
 
 Future versions may add extra helpers or type definitions.
 
