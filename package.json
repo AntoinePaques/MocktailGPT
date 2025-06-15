@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "prepare": "husky install",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
@@ -24,7 +24,8 @@
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.0.3",
-    "rimraf": "^5.0.5"
+    "rimraf": "^5.0.5",
+    "vitest": "^1.4.0"
   },
   "lint-staged": {
     "**/*.{ts,js,json}": "prettier --write",
