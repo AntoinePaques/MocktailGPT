@@ -25,7 +25,7 @@ async function main() {
       process.exit(1);
     }
     const relInput = relative(process.cwd(), inputPath).replace(/\\/g, '/');
-    const content = `import type { MocktailConfig } from '@mocktailgpt/ts';\n\nconst config: MocktailConfig = {\n  input: './${relInput}',\n  output: './src/api',\n  projectName: 'default',\n  mock: true,\n};\n\nexport default config;\n`;
+    const content = `import type { MocktailConfig } from '@mocktailgpt/ts';\n\nconst config: MocktailConfig = {\n  input: '${relInput}',\n  output: 'src/api',\n  projectName: 'default',\n  mock: true,\n};\n\nexport default config;\n`;
     writeFileSync(configFile, content);
     await formatWithPrettier(configFile);
     console.log('✅ mocktail.config.ts created');

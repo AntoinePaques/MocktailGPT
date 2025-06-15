@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { resolve } from 'path';
 import { writeFileSync, unlinkSync } from 'fs';
-import { loadConfig } from '../config/loadConfig';
-import type { Config } from '../config/types';
+import { loadConfig } from '../loadConfig';
 
 function createTempConfig(content: string, name: string) {
   const file = resolve(process.cwd(), `.temp-${name}.config.ts`);
@@ -11,10 +10,8 @@ function createTempConfig(content: string, name: string) {
 }
 
 describe('loadConfig', () => {
-  it('returns defaults when config is empty', async () => {
-    const file = createTempConfig('export default {}', 'empty');
-    const config = await loadConfig(file);
-    unlinkSync(file);
+  it('returns defaults when config file is missing', async () => {
+    const config = await loadConfig('./missing.config.ts');
     expect(config).toEqual({
       input: 'swagger.yaml',
       output: 'src/api',
@@ -38,7 +35,9 @@ describe('loadConfig', () => {
     unlinkSync(file);
   });
 
-  it('throws when file is missing', async () => {
-    await expect(loadConfig('./nope.config.ts')).rejects.toThrow();
+  it('throws on invalid TypeScript', async () => {
+    const file = createTempConfig('export default', 'broken');
+    await expect(loadConfig(file)).rejects.toThrow();
+    unlinkSync(file);
   });
 });

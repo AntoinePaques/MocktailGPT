@@ -14,20 +14,23 @@ The CLI also offers an `init` command to scaffold a `mocktail.config.ts` from an
 OpenAPI file:
 
 ```bash
-mocktail init --input ./path/to/swagger.yaml
+mocktail init --input ./path/to/openapi.yaml
 ```
 
 The configuration file supports the following options with defaults:
 
 ```ts
-import { defineMocktailConfig } from '@mocktailgpt/ts';
+import type { MocktailConfig } from '@mocktailgpt/ts';
 
-export default defineMocktailConfig({
-  input: './swagger.yaml',
-  output: './src/api',
+const config: MocktailConfig = {
+  input: 'swagger.yaml',
+  output: 'src/api',
   projectName: 'default',
   mock: true,
-});
+  // postFiles: { enabled: true },
+};
+
+export default config;
 ```
 
 ## Development

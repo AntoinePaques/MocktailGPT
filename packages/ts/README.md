@@ -7,18 +7,20 @@ CLI tool scaffold for generating TypeScript clients from OpenAPI with MSW mocks.
 Create a `mocktail.config.ts` at the root of your project:
 
 ```ts
-import { defineMocktailConfig } from '@mocktailgpt/ts';
+import type { MocktailConfig } from '@mocktailgpt/ts';
 
-export default defineMocktailConfig({
-  input: './swagger.yaml',
-  output: './src/api',
+const config: MocktailConfig = {
+  input: 'swagger.yaml',
+  output: 'src/api',
   projectName: 'default',
   mock: true,
   postFiles: {
     enabled: true,
     // output: '.', // optional path relative to `output`
   },
-});
+};
+
+export default config;
 ```
 
 Available options (all optional):
@@ -27,6 +29,7 @@ Available options (all optional):
 - `output` _(default: `'src/api'`)_ – destination folder for the generated SDK
 - `projectName` _(default: `'default'`)_ – name used for the Orval entry
 - `mock` _(default: `true`)_ – enable MSW mock generation
+- `postFiles` – generate helper files (`index.ts`, `msw.ts`, `mockServiceWorker.js`)
 
 Load it in your scripts with:
 
@@ -36,7 +39,7 @@ import { loadConfig } from '@mocktailgpt/ts';
 const config = await loadConfig('./mocktail.config.ts');
 ```
 
-`loadConfig` will throw a readable error if the file does not exist or if the
+`loadConfig` returns defaults when the file is missing and throws if the
 configuration fails validation.
 
 ### Generate an Orval configuration
