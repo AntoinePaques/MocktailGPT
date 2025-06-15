@@ -21,8 +21,7 @@ const config: MocktailConfig = {
   mock: true,
   postFiles: {
     enabled: true,
-};
-export default config;
+  },
 };
 
 export default config;
@@ -79,10 +78,15 @@ await generateSDKFromConfig(config);
 ```bash
 mocktail init
 mocktail init --yes
+mocktail init --format json
 mocktail generate
 ```
 
+Use `--format ts|json|yml` to choose the config file type. Without flags, an interactive prompt will ask for the values.
+
 When `mock` is enabled, `msw.ts`, `index.ts`, and `mockServiceWorker.js` are created inside the configured output directory. Existing files are left untouched.
+
+If a `.env` file exists next to your config, it will be loaded automatically before running the generation.
 
 ## Example
 

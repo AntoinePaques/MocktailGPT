@@ -1,29 +1,27 @@
 import { existsSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import prompts from 'prompts';
+import YAML from 'yaml';
 import type { MocktailConfig } from '../config/types';
-    clientName: 'client',
-      {
-        type: 'text',
-        name: 'clientName',
-        message: 'Client name:',
-        initial: defaults.clientName,
-      },
-      clientName: answers.clientName,
-    `  clientName: '${config.clientName}',\n` +
-import { formatWithPrettier } from '../utils/formatWithPrettier.js';
+import { formatWithPrettier } from '../utils/formatWithPrettier';
 
 export async function initConfig(args: string[] = []): Promise<void> {
   const yes = args.includes('--yes');
-  const configPath = resolve(process.cwd(), 'mocktail.config.ts');
+  const formatIndex = args.indexOf('--format');
+  const format = formatIndex !== -1 ? args[formatIndex + 1] : 'ts';
+  if (!['ts', 'json', 'yml'].includes(format)) {
+    console.error('Invalid --format value. Use ts, json or yml');
+    process.exit(1);
+  }
+  const configPath = resolve(process.cwd(), `mocktail.config.${format}`);
   if (existsSync(configPath)) {
-    console.error('mocktail.config.ts already exists');
+    console.error(`${configPath.split('/').pop()} already exists`);
     process.exit(1);
   }
 
   const defaults: MocktailConfig = {
-    input: 'swagger.yaml',
-    output: 'src/api',
+    input: './swagger.yaml',
+    output: './src/api',
     projectName: 'default',
     clientName: 'client',
     mock: true,
@@ -64,8 +62,8 @@ export async function initConfig(args: string[] = []): Promise<void> {
       {
         type: 'text',
         name: 'clientName',
-        message: 'Client name (default: client)',
-        initial: 'client',
+        message: 'Client name:',
+        initial: defaults.clientName,
       },
     ]);
 
@@ -78,17 +76,28 @@ export async function initConfig(args: string[] = []): Promise<void> {
     };
   }
 
-  const content =
-    `import type { MocktailConfig } from '@mocktailgpt/ts';\n\n` +
-    `const config: MocktailConfig = {\n` +
-    `  input: '${config.input}',\n` +
-    `  output: '${config.output}',\n` +
-    `  projectName: '${config.projectName}',\n` +
-    `  mock: ${config.mock},\n` +
-    `};\n\n` +
-    `export default config;\n`;
+  let content = '';
+  switch (format) {
+    case 'json':
+      content = JSON.stringify(config, null, 2) + '\n';
+      break;
+    case 'yml':
+      content = YAML.stringify(config);
+      break;
+    default:
+      content =
+        `import type { MocktailConfig } from '@mocktailgpt/ts';\n\n` +
+        `const config: MocktailConfig = {\n` +
+        `  input: '${config.input}',\n` +
+        `  output: '${config.output}',\n` +
+        `  projectName: '${config.projectName}',\n` +
+        `  clientName: '${config.clientName}',\n` +
+        `  mock: ${config.mock},\n` +
+        `};\n\n` +
+        `export default config;\n`;
+  }
 
   writeFileSync(configPath, content);
   await formatWithPrettier(configPath);
-  console.log('✅ mocktail.config.ts created');
+  console.log(`✅ ${configPath.split('/').pop()} created`);
 }

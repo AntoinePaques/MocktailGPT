@@ -13,12 +13,13 @@ the output directory.
 
 The CLI offers an `init` command to interactively create a `mocktail.config.ts`.
 Run it without flags to answer prompts, or pass `--yes` to generate a default
-configuration:
+configuration. You can also specify `--format ts|json|yml`:
 
 ```bash
 mocktail init
 # or non-interactive
 mocktail init --yes
+mocktail init --format json
 ```
 
 The configuration file supports the following options with defaults:
@@ -37,6 +38,8 @@ const config: MocktailConfig = {
 
 export default config;
 ```
+
+If a `.env` file is present, it will be loaded automatically when running the CLI.
 
 ## Development
 
