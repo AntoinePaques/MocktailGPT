@@ -23,3 +23,11 @@ import { loadConfig } from '@mocktailgpt/ts'
 
 const config = await loadConfig('./mocktail.config.ts')
 ```
+
+## CLI
+
+Run the generator directly from your terminal:
+
+```bash
+npx mocktail generate --config ./mocktail.config.ts
+```
