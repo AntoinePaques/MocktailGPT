@@ -1,0 +1,11 @@
+node_modules
+dist
+.env*
+*.log
+*.tsbuildinfo
+pnpm-lock.yaml
+# existing ignores
+.pnpm/
+pnpm-debug.log*
+packages/*/dist/
+packages/*/node_modules/
