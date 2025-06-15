@@ -24,15 +24,18 @@ import { loadConfig } from '@mocktailgpt/ts';
 const config = await loadConfig('./mocktail.config.ts');
 ```
 
+`loadConfig` will throw a readable error if the file does not exist or if the
+configuration fails validation.
+
 ### Generate an Orval configuration
 
-With the validated config you can create an `orval.config.js` for programmatic usage:
+With the validated config you can create a `.mocktail/orval.temp.config.ts` for programmatic usage:
 
 ```ts
 import { generateOrvalConfig } from '@mocktailgpt/ts';
 
 const orvalConfigPath = generateOrvalConfig(config);
-// then use it with orval
+// orvalConfigPath points to .mocktail/orval.temp.config.ts
 // await generate(orvalConfigPath)
 ```
 
@@ -56,18 +59,12 @@ mocktail init --swagger ./swagger.yaml
 ```
 
 It also creates an
-`orval.config.js` in the current directory and runs Orval programmatically.
+`.mocktail/orval.temp.config.ts` in the current directory and runs Orval programmatically.
 After Orval completes it also generates helper files in the output directory:
 
 - `index.ts` that re-exports all generated modules
-- `msw.ts` exposing a `handlers` array from the mocks
+- `msw.ts` automatically aggregates handlers from every `*.msw.ts` file
 - `mockServiceWorker.js` starting an MSW worker
-
-You can pass `-c` or `--config` to use a custom Orval configuration path:
-
-```bash
-npx mocktail generate --config ./mocktail.config.ts -c ./orval.config.js
-```
 
 ## Development
 
@@ -77,6 +74,7 @@ Available scripts:
 pnpm build         # compile TypeScript
 pnpm clean         # remove build output and generated config
 pnpm dev           # clean then build
+pnpm generate      # run the CLI to generate the SDK
 ```
 
 Formatting and linting are handled from the repository root with `pnpm format` and `pnpm lint`.

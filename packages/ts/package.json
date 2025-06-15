@@ -15,8 +15,9 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "clean": "rm -rf dist orval.config.js",
-    "dev": "pnpm clean && pnpm build"
+    "clean": "rm -rf dist .mocktail",
+    "dev": "pnpm clean && pnpm build",
+    "generate": "mocktail generate"
   },
   "files": [
     "dist"

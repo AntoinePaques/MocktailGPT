@@ -1,39 +1,63 @@
-import { readdirSync, writeFileSync } from 'fs';
+import { readdir, writeFile } from 'fs/promises';
 import { join, relative } from 'path';
+import { formatWithPrettier } from '../utils/formatWithPrettier';
 
-function collectTsFiles(dir: string, base: string = dir): string[] {
-  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+async function collectTsFiles(dir: string, base: string = dir): Promise<string[]> {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const files: string[] = [];
+  for (const entry of entries) {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
-      return collectTsFiles(fullPath, base);
-    }
-    if (
+      files.push(...(await collectTsFiles(fullPath, base)));
+    } else if (
       entry.isFile() &&
       entry.name.endsWith('.ts') &&
       entry.name !== 'index.ts' &&
       entry.name !== 'msw.ts'
     ) {
-      return [relative(base, fullPath).replace(/\\/g, '/')];
+      files.push(relative(base, fullPath).replace(/\\/g, '/'));
     }
-    return [];
-  });
+  }
+  return files;
 }
 
-export function generatePostFiles(baseDir: string) {
-  const files = collectTsFiles(baseDir);
+async function collectMswFiles(dir: string, base: string = dir): Promise<string[]> {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const files: string[] = [];
+  for (const entry of entries) {
+    const fullPath = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...(await collectMswFiles(fullPath, base)));
+    } else if (entry.isFile() && entry.name.endsWith('.msw.ts') && entry.name !== 'msw.ts') {
+      files.push(relative(base, fullPath).replace(/\\/g, '/'));
+    }
+  }
+  return files;
+}
+
+export async function generatePostFiles(baseDir: string) {
+  const files = await collectTsFiles(baseDir);
   const exportLines = files
     .map((file) => `export * from './${file.replace(/\.ts$/, '')}';`)
     .join('\n');
-  writeFileSync(join(baseDir, 'index.ts'), exportLines + '\n');
+  const indexPath = join(baseDir, 'index.ts');
+  await writeFile(indexPath, exportLines + '\n');
 
-  const mswContent =
-    "import { handlers as defaultHandlers } from './default/default.msw';\n" +
-    'export const handlers = [...defaultHandlers];\n';
-  writeFileSync(join(baseDir, 'msw.ts'), mswContent);
+  const mswFiles = await collectMswFiles(baseDir);
+  const imports = mswFiles
+    .map((file, i) => `import { handlers as h${i} } from './${file.replace(/\.ts$/, '')}';`)
+    .join('\n');
+  const handlersArray = mswFiles.map((_f, i) => `...h${i}`).join(', ');
+  const mswContent = `${imports}\n\nexport const handlers = [${handlersArray}];\n`;
+  const mswPath = join(baseDir, 'msw.ts');
+  await writeFile(mswPath, mswContent);
 
   const workerContent =
     "import { setupWorker } from 'msw';\n" +
     "import { handlers } from './msw';\n" +
     'export const worker = setupWorker(...handlers);\n';
-  writeFileSync(join(baseDir, 'mockServiceWorker.js'), workerContent);
+  await writeFile(join(baseDir, 'mockServiceWorker.js'), workerContent);
+
+  await formatWithPrettier(indexPath);
+  await formatWithPrettier(mswPath);
 }

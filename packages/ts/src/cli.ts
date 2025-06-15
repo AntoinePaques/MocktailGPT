@@ -46,18 +46,12 @@ async function main() {
     const config = await loadConfig(configPath);
     spinner.succeed('Config loaded');
 
-    generateOrvalConfig(config);
-
-    const configArgIndex = args.findIndex((arg) => arg === '--config' || arg === '-c');
-    const orvalConfigPath =
-      configArgIndex !== -1
-        ? resolve(process.cwd(), args[configArgIndex + 1])
-        : resolve(process.cwd(), 'orval.config.js');
+    const orvalConfigPath = generateOrvalConfig(config);
 
     try {
       await runCLI(['--config', orvalConfigPath]);
       console.log('✅ Orval generation complete');
-      generatePostFiles(resolve(process.cwd(), config.output));
+      await generatePostFiles(resolve(process.cwd(), config.output));
     } catch (err) {
       console.error('❌ Orval generation failed:', err);
       process.exit(1);
