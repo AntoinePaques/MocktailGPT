@@ -66,12 +66,6 @@ After Orval completes it also generates helper files in the output directory:
 - `msw.ts` exposing a `handlers` array from the mocks
 - `mockServiceWorker.js` starting an MSW worker
 
-You can pass `-c` or `--config` to use a custom Orval configuration path:
-
-```bash
-npx mocktail generate --config ./mocktail.config.ts -c ./.mocktail/orval.temp.config.ts
-```
-
 ## Development
 
 Available scripts:
@@ -80,6 +74,7 @@ Available scripts:
 pnpm build         # compile TypeScript
 pnpm clean         # remove build output and generated config
 pnpm dev           # clean then build
+pnpm generate      # run the CLI to generate the SDK
 ```
 
 Formatting and linting are handled from the repository root with `pnpm format` and `pnpm lint`.

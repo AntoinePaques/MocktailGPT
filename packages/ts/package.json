@@ -16,7 +16,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist .mocktail",
-    "dev": "pnpm clean && pnpm build"
+    "dev": "pnpm clean && pnpm build",
+    "generate": "mocktail generate"
   },
   "files": [
     "dist"

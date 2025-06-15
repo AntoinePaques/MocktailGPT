@@ -46,13 +46,7 @@ async function main() {
     const config = await loadConfig(configPath);
     spinner.succeed('Config loaded');
 
-    generateOrvalConfig(config);
-
-    const configArgIndex = args.findIndex((arg) => arg === '--config' || arg === '-c');
-    const orvalConfigPath =
-      configArgIndex !== -1
-        ? resolve(process.cwd(), args[configArgIndex + 1])
-        : resolve(process.cwd(), '.mocktail/orval.temp.config.ts');
+    const orvalConfigPath = generateOrvalConfig(config);
 
     try {
       await runCLI(['--config', orvalConfigPath]);

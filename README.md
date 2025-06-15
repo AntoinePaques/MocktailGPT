@@ -9,7 +9,6 @@ with MSW mocks and a `mocktail` command line interface. The package can
 generate a `.mocktail/orval.temp.config.ts`, run [Orval](https://orval.dev) (either via the
 CLI or programmatically with `generateSDKFromConfig`), and create helper files
 (`index.ts`, `msw.ts`, `mockServiceWorker.js`).
-Use `-c` or `--config` to point to a custom Orval configuration.
 
 The CLI also offers an `init` command to scaffold a `mocktail.config.ts` from a
 Swagger file:
