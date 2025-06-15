@@ -36,6 +36,16 @@ const orvalConfigPath = generateOrvalConfig(config);
 // await generate(orvalConfigPath)
 ```
 
+### Generate the SDK programmatically
+
+If you prefer to run Orval directly, use `generateSDKFromConfig`:
+
+```ts
+import { generateSDKFromConfig } from '@mocktailgpt/ts';
+
+await generateSDKFromConfig(config);
+```
+
 ## CLI
 
 Run the generator directly from your terminal. The CLI offers an `init` command
