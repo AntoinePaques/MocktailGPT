@@ -24,6 +24,18 @@ import { loadConfig } from '@mocktailgpt/ts'
 const config = await loadConfig('./mocktail.config.ts')
 ```
 
+### Generate an Orval configuration
+
+With the validated config you can create an `orval.config.js` for programmatic usage:
+
+```ts
+import { generateOrvalConfig } from '@mocktailgpt/ts'
+
+const orvalConfigPath = generateOrvalConfig(config)
+// then use it with orval
+// await generate(orvalConfigPath)
+```
+
 ## CLI
 
 Run the generator directly from your terminal:
