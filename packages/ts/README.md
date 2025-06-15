@@ -43,3 +43,20 @@ Run the generator directly from your terminal:
 ```bash
 npx mocktail generate --config ./mocktail.config.ts
 ```
+
+## Development
+
+Available scripts:
+
+```bash
+pnpm build         # compile TypeScript
+pnpm clean         # remove build output and generated config
+pnpm dev           # clean then build
+pnpm format        # format source files
+pnpm format:check  # check formatting
+pnpm lint          # run ESLint
+pnpm lint:fix      # fix lint issues
+```
+
+Installing dependencies will run `pnpm prepare` to set up Husky.
+The pre-commit hook formats and lints staged files via `lint-staged`.
