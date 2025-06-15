@@ -8,8 +8,8 @@ This repository houses multiple packages for the MocktailGPT project.
 with MSW mocks and a `mocktail` command line interface. The package can generate
 a `mocktail.orval.config.ts`, run [Orval](https://orval.dev) either via the CLI
 or programmatically with `generateSDKFromConfig`, and produce MSW mocks. When
-`mock` is enabled, an `msw.ts` file aggregates all handlers and
-`mockServiceWorker.js` is copied to `public/`.
+`mock` is enabled, `msw.ts`, `index.ts` and `mockServiceWorker.js` are created in
+the output directory.
 
 The CLI offers an `init` command to interactively create a `mocktail.config.ts`.
 Run it without flags to answer prompts, or pass `--yes` to generate a default
@@ -30,6 +30,7 @@ const config: MocktailConfig = {
   input: 'swagger.yaml',
   output: 'src/api',
   projectName: 'default',
+  clientName: 'client',
   mock: true,
   // postFiles: { enabled: true },
 };
