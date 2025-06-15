@@ -63,7 +63,7 @@ It also creates an
 After Orval completes it also generates helper files in the output directory:
 
 - `index.ts` that re-exports all generated modules
-- `msw.ts` exposing a `handlers` array from the mocks
+- `msw.ts` automatically aggregates handlers from every `*.msw.ts` file
 - `mockServiceWorker.js` starting an MSW worker
 
 ## Development

@@ -51,7 +51,7 @@ async function main() {
     try {
       await runCLI(['--config', orvalConfigPath]);
       console.log('✅ Orval generation complete');
-      generatePostFiles(resolve(process.cwd(), config.output));
+      await generatePostFiles(resolve(process.cwd(), config.output));
     } catch (err) {
       console.error('❌ Orval generation failed:', err);
       process.exit(1);

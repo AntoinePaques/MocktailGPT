@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import { resolve } from 'path';
 import type { Config } from '../config/types';
 import { generateSDKFromConfig } from '../generator/generateSDKFromConfig';
 
@@ -36,6 +37,8 @@ describe('generateSDKFromConfig', () => {
       customMutators: false,
     };
 
+    const { generatePostFiles } = await import('../generator/generatePostFiles');
+
     await generateSDKFromConfig(config);
 
     const start = globalThis.oraStart!;
@@ -43,6 +46,7 @@ describe('generateSDKFromConfig', () => {
 
     expect(start).toHaveBeenCalled();
     expect(runCLIMock).toHaveBeenCalledWith(['--config', 'mock-orval.temp.config.ts']);
+    expect(generatePostFiles).toHaveBeenCalledWith(resolve(process.cwd(), config.output));
     expect(succeed).toHaveBeenCalledWith('✅ SDK generated for swagger');
   });
 });
