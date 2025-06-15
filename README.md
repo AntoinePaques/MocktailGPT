@@ -10,6 +10,13 @@ generate an `orval.config.js`, run [Orval](https://orval.dev), and create
 helper files (`index.ts`, `msw.ts`, `mockServiceWorker.js`).
 Use `-c` or `--config` to point to a custom Orval configuration.
 
+The CLI also offers an `init` command to scaffold a `mocktail.config.ts` from a
+Swagger file:
+
+```bash
+mocktail init --swagger ./path/to/swagger.yaml
+```
+
 ## Development
 
 Standard tooling is configured at the repository root:

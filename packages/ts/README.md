@@ -38,7 +38,14 @@ const orvalConfigPath = generateOrvalConfig(config);
 
 ## CLI
 
-Run the generator directly from your terminal. The CLI creates an
+Run the generator directly from your terminal. The CLI offers an `init` command
+to scaffold a `mocktail.config.ts` from a Swagger file:
+
+```bash
+mocktail init --swagger ./swagger.yaml
+```
+
+It also creates an
 `orval.config.js` in the current directory and runs Orval programmatically.
 After Orval completes it also generates helper files in the output directory:
 
